@@ -1,0 +1,25 @@
+buildscript {
+    repositories {
+        jcenter()
+    }
+    dependencies {
+        classpath 'com.android.tools.build:gradle:1.0.0'
+    }
+}
+
+allprojects {
+    repositories {
+        jcenter()
+        maven {url  "http://tokbox.bintray.com/maven"}
+        maven { url "https://maven.google.com"}
+    }
+}
+
+dependencies {
+    compile fileTree(dir: 'libs', include: ['*.jar'])
+    compile 'com.opentok.android:opentok-android-sdk:2.12.0'
+    compile 'com.android.support:appcompat-v7:23.1.0'
+    compile 'com.android.support:design:23.0.0'
+    compile 'pub.devrel:easypermissions:0.4.0'
+    compile 'com.android.support.constraint:constraint-layout:1.1.0-beta1'
+} 

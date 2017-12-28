@@ -1,0 +1,17 @@
+{
+    "name": "cordova-plugin-tokbox",
+    "version": "1.0.0",
+    "description": "Interactive video, voice and messaging application",
+    "cordova": {
+        "id": "com.fitbase.tokbox",
+        "platforms": [
+          "android"
+        ]
+    },
+    "engines": [{
+                    "name": "cordova",
+                    "version": ">=4.0.0"
+    }],
+    "author": "Fitbase Team",
+    "license": "Apache 2.0"
+}

@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <dimen name="publisher_height">120dp</dimen>
+    <dimen name="publisher_width">120dp</dimen>
+    <dimen name="publisher_end_margin">10dp</dimen>
+    <dimen name="publisher_right_margin">16dp</dimen>
+    <dimen name="publisher_bottom_margin">16dp</dimen>
+    <dimen name="publisher_padding">2dp</dimen>
+
+</resources>
