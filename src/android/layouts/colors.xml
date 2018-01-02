@@ -3,11 +3,16 @@
     <color name="colorPrimary">#3F51B5</color>
     <color name="colorPrimaryDark">#303F9F</color>
     <color name="colorAccent">#FF4081</color>
-
+  <color name="audiOnlyBackground">#7e7e7e</color>
+  <color name="gradientAudioOnlyStart">#343434</color>
+  <color name="gradientAudioOnlyEnd">#6e6e6e</color>
+  <color name="endCall">#cb1e28</color>
     <color name="white">#FFFFFF</color>
     <color name="cpg">#50d2b8</color>
-
+  <color name="quality_warning">#0a0a09</color>
+  <color name="warning_text">#efeeed</color>
     <color name="pc">#7d6297</color>
     <color name="publisher_border_color">#FFFFFF</color>
+  <color name="subscriber_background">#414140</color>
 
 </resources>

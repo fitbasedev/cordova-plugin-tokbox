@@ -52,35 +52,50 @@
 		<resource-file src="src/android/layouts/strings.xml" target="res/values/strings.xml"/>
 		<resource-file src="src/android/layouts/styles.xml" target="res/values/styles.xml"/>
 
-		<resource-file src="src/android/images/mipmap-hdpi/exit.png" target="res/mipmap-hdpi/exit.png"/>
-		<resource-file src="src/android/images/mipmap-hdpi/pause_audio.png" target="res/mipmap-hdpi/pause_audio.png"/>
-		<resource-file src="src/android/images/mipmap-hdpi/pause_video.png" target="res/mipmap-hdpi/pause_video.png"/>
-		<resource-file src="src/android/images/mipmap-hdpi/play_audio.png" target="res/mipmap-hdpi/play_audio.png"/>
-		<resource-file src="src/android/images/mipmap-hdpi/play_video.png" target="res/mipmap-hdpi/play_video.png"/>
+		<resource-file src="src/android/images/drawable/bckg_audio_only.xml" target="res/drawable/bckg_audio_only.xml"/>
+		<resource-file src="src/android/images/drawable/bckg_icon.xml" target="res/drawable/bckg_icon.xml"/>
+		<resource-file src="src/android/images/drawable/end_call_button.xml" target="res/drawable/end_call_button.xml"/>
+		<resource-file src="src/android/images/drawable/gradient_audionly.xml" target="res/drawable/gradient_audionly.xml"/>
 
-		<resource-file src="src/android/images/mipmap-mdpi/exit.png" target="res/mipmap-mdpi/exit.png"/>
-		<resource-file src="src/android/images/mipmap-mdpi/pause_audio.png" target="res/mipmap-mdpi/pause_audio.png"/>
-		<resource-file src="src/android/images/mipmap-mdpi/pause_video.png" target="res/mipmap-mdpi/pause_video.png"/>
-		<resource-file src="src/android/images/mipmap-mdpi/play_audio.png" target="res/mipmap-mdpi/play_audio.png"/>
-		<resource-file src="src/android/images/mipmap-mdpi/play_video.png" target="res/mipmap-mdpi/play_video.png"/>
+		<resource-file src="src/android/images/drawable-hdpi/avatar.png" target="res/drawable-hdpi/avatar.png"/>
+		<resource-file src="src/android/images/drawable-hdpi/camera.png" target="res/drawable-hdpi/camera.png"/>
+		<resource-file src="src/android/images/drawable-hdpi/hang_up.png" target="res/drawable-hdpi/hang_up.png"/>
+		<resource-file src="src/android/images/drawable-hdpi/mic_icon.png" target="res/drawable-hdpi/mic_icon.png"/>
+		<resource-file src="src/android/images/drawable-hdpi/muted_mic_icon.png" target="res/drawable-hdpi/muted_mic_icon.png"/>
+		<resource-file src="src/android/images/drawable-hdpi/no_video_icon.png" target="res/drawable-hdpi/no_video_icon.png"/>
+		<resource-file src="src/android/images/drawable-hdpi/video_icon.png" target="res/drawable-hdpi/video_icon.png"/>
 
-		<resource-file src="src/android/images/mipmap-xhdpi/exit.png" target="res/mipmap-xhdpi/exit.png"/>
-		<resource-file src="src/android/images/mipmap-xhdpi/pause_audio.png" target="res/mipmap-xhdpi/pause_audio.png"/>
-		<resource-file src="src/android/images/mipmap-xhdpi/pause_video.png" target="res/mipmap-xhdpi/pause_video.png"/>
-		<resource-file src="src/android/images/mipmap-xhdpi/play_audio.png" target="res/mipmap-xhdpi/play_audio.png"/>
-		<resource-file src="src/android/images/mipmap-xhdpi/play_video.png" target="res/mipmap-xhdpi/play_video.png"/>
+		<resource-file src="src/android/images/drawable-mdpi/avatar.png" target="res/drawable-mdpi/avatar.png"/>
+		<resource-file src="src/android/images/drawable-mdpi/camera.png" target="res/drawable-mdpi/camera.png"/>
+		<resource-file src="src/android/images/drawable-mdpi/hang_up.png" target="res/drawable-mdpi/hang_up.png"/>
+		<resource-file src="src/android/images/drawable-mdpi/mic_icon.png" target="res/drawable-mdpi/mic_icon.png"/>
+		<resource-file src="src/android/images/drawable-mdpi/muted_mic_icon.png" target="res/drawable-mdpi/muted_mic_icon.png"/>
+		<resource-file src="src/android/images/drawable-mdpi/no_video_icon.png" target="res/drawable-mdpi/no_video_icon.png"/>
+		<resource-file src="src/android/images/drawable-mdpi/video_icon.png" target="res/drawable-mdpi/video_icon.png"/>
 
-		<resource-file src="src/android/images/mipmap-xxhdpi/exit.png" target="res/mipmap-xxhdpi/exit.png"/>
-		<resource-file src="src/android/images/mipmap-xxhdpi/pause_audio.png" target="res/mipmap-xxhdpi/pause_audio.png"/>
-		<resource-file src="src/android/images/mipmap-xxhdpi/pause_video.png" target="res/mipmap-xxhdpi/pause_video.png"/>
-		<resource-file src="src/android/images/mipmap-xxhdpi/play_audio.png" target="res/mipmap-xxhdpi/play_audio.png"/>
-		<resource-file src="src/android/images/mipmap-xxhdpi/play_video.png" target="res/mipmap-xxhdpi/play_video.png"/>
+		<resource-file src="src/android/images/drawable-xhdpi/avatar.png" target="res/drawable-xhdpi/avatar.png"/>
+		<resource-file src="src/android/images/drawable-xhdpi/camera.png" target="res/drawable-xhdpi/camera.png"/>
+		<resource-file src="src/android/images/drawable-xhdpi/hang_up.png" target="res/drawable-xhdpi/hang_up.png"/>
+		<resource-file src="src/android/images/drawable-xhdpi/mic_icon.png" target="res/drawable-xhdpi/mic_icon.png"/>
+		<resource-file src="src/android/images/drawable-xhdpi/no_video_icon.png" target="res/drawable-xhdpi/no_video_icon.png"/>
+		<resource-file src="src/android/images/drawable-xhdpi/video_icon.png" target="res/drawable-xhdpi/video_icon.png"/>
 
-		<resource-file src="src/android/images/mipmap-xxxhdpi/exit.png" target="res/mipmap-xxxhdpi/exit.png"/>
-		<resource-file src="src/android/images/mipmap-xxxhdpi/pause_audio.png" target="res/mipmap-xxxhdpi/pause_audio.png"/>
-		<resource-file src="src/android/images/mipmap-xxxhdpi/pause_video.png" target="res/mipmap-xxxhdpi/pause_video.png"/>
-		<resource-file src="src/android/images/mipmap-xxxhdpi/play_audio.png" target="res/mipmap-xxxhdpi/play_audio.png"/>
-		<resource-file src="src/android/images/mipmap-xxxhdpi/play_video.png" target="res/mipmap-xxxhdpi/play_video.png"/>
+		<resource-file src="src/android/images/drawable-xxhdpi/avatar.png" target="res/drawable-xxhdpi/avatar.png"/>
+		<resource-file src="src/android/images/drawable-xxhdpi/camera.png" target="res/drawable-xxhdpi/camera.png"/>
+		<resource-file src="src/android/images/drawable-xxhdpi/hang_up.png" target="res/drawable-xxhdpi/hang_up.png"/>
+		<resource-file src="src/android/images/drawable-xxhdpi/mic_icon.png" target="res/drawable-xxhdpi/mic_icon.png"/>
+		<resource-file src="src/android/images/drawable-xxhdpi/muted_mic_icon.png" target="res/drawable-xxhdpi/muted_mic_icon.png"/>
+        <resource-file src="src/android/images/drawable-xxhdpi/no_video_icon.png" target="res/drawable-xxhdpi/no_video_icon.png"/>
+		<resource-file src="src/android/images/drawable-xxhdpi/video_icon.png" target="res/drawable-xxhdpi/video_icon.png"/>
+
+	 
+		<resource-file src="src/android/images/drawable-xxxhdpi/camera.png" target="res/drawable-xxxhdpi/camera.png"/>
+		<resource-file src="src/android/images/drawable-xxxhdpi/hang_up.png" target="res/drawable-xxxhdpi/hang_up.png"/>
+		<resource-file src="src/android/images/drawable-xxxhdpi/mic_icon.png" target="res/drawable-xxxhdpi/mic_icon.png"/>
+		<resource-file src="src/android/images/drawable-xxxhdpi/muted_mic_icon.png" target="res/drawable-xxxhdpi/muted_mic_icon.png"/>
+		<resource-file src="src/android/images/drawable-xxxhdpi/no_video_icon.png" target="res/drawable-xxxhdpi/no_video_icon.png"/>
+		<resource-file src="src/android/images/drawable-xxxhdpi/video_icon.png" target="res/drawable-xxxhdpi/video_icon.png"/>
+		<resource-file src="src/android/images/mipmap-ldpi/avatar.png" target="res/mipmap/avatar.png"/>
     </platform>
 
 

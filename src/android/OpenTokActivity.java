@@ -1,29 +1,38 @@
 package com.fitbase.TokBox;
 
-import com.fitbase.MainActivity;
-import com.fitbase.R;
 import android.Manifest;
+import android.app.ProgressDialog;
 import android.content.res.TypedArray;
 import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.os.Handler;
 import android.support.annotation.NonNull;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.view.MotionEvent;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.ProgressBar;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.fitbase.MainActivity;
+import com.fitbase.R;
 import com.opentok.android.BaseVideoRenderer;
 import com.opentok.android.OpentokError;
 import com.opentok.android.Publisher;
 import com.opentok.android.PublisherKit;
 import com.opentok.android.Session;
+import com.opentok.android.Session.StreamPropertiesListener;
 import com.opentok.android.Stream;
 import com.opentok.android.Subscriber;
+import com.opentok.android.SubscriberKit;
 
 import org.json.JSONObject;
 
@@ -45,7 +54,7 @@ import pub.devrel.easypermissions.EasyPermissions;
 public class OpenTokActivity extends AppCompatActivity
         implements EasyPermissions.PermissionCallbacks,
         Publisher.PublisherListener,
-        Session.SessionListener {
+        Session.SessionListener, Session.ReconnectionListener ,Subscriber.VideoListener{
 
   private static final String TAG = MainActivity.class.getSimpleName();
   private static final int RC_SETTINGS_SCREEN_PERM = 123;
@@ -53,20 +62,24 @@ public class OpenTokActivity extends AppCompatActivity
 
   private Session mSession;
   private Publisher mPublisher;
-
+long time;
   private ArrayList<Subscriber> mSubscribers = new ArrayList<Subscriber>();
   private HashMap<Stream, Subscriber> mSubscriberStreams = new HashMap<Stream, Subscriber>();
 
   //  private ConstraintLayout mContainer;
-  private FrameLayout mPublisherViewContainer;
-  private FrameLayout mSubscriberViewContainer;
+  private RelativeLayout mPublisherViewContainer;
+  private RelativeLayout mSubscriberViewContainer;
+  private ImageView mLocalAudioOnlyImage,avatar;
+  private ProgressDialog mProgressDialog,mSessionReconnectDialog;
+
 
   private String tokBoxData, apiKey, token, sessionId, publisherId, duration, startdate;
-
+private RelativeLayout actionBar;
   ImageButton btnPausevideo, btnPauseaudio, btn_exit;
   private Handler hidehandler;
   LinearLayout llcontrols;
-  TextView tvtimer;
+  private TextView tvtimer,init_info,  mAlert;
+  float dX, dY;
   private static final String FORMAT_2 = "%02d";
   @Override
   protected void onCreate(Bundle savedInstanceState) {
@@ -77,35 +90,43 @@ public class OpenTokActivity extends AppCompatActivity
     hidehandler = new Handler();
     tokBoxData = getIntent().getStringExtra("tokbox_obj");
     try {
-       JSONObject jobj = new JSONObject(tokBoxData);
-       apiKey = jobj.getString("apiKey");
-       token =  jobj.getString("tokenId");
-       sessionId = jobj.getString("liveSessionId");
-       publisherId = jobj.getString("trainerUserid");
-       duration = jobj.getString("duration");
-       startdate = jobj.getString("startDate");
+      JSONObject jobj = new JSONObject(tokBoxData);
+      apiKey = jobj.getString("apiKey");
+      token = jobj.getString("tokenId");
+      sessionId = jobj.getString("liveSessionId");
+      publisherId = jobj.getString("trainerUserid");
+      duration = jobj.getString("duration");
+      startdate = jobj.getString("startDate");
     } catch (Exception e) {
-        e.printStackTrace();
+      e.printStackTrace();
     }
 
+
+//    mContainer = (ConstraintLayout) findViewById(R.id.main_container);
     // initialize view objects from your layout
-    mPublisherViewContainer = (FrameLayout) findViewById(R.id.publisher_container);
-    mSubscriberViewContainer = (FrameLayout) findViewById(R.id.subscriber_container);
+    mPublisherViewContainer = (RelativeLayout) findViewById(R.id.publisher_container);
+    mSubscriberViewContainer = (RelativeLayout) findViewById(R.id.subscriber_container);
     btnPausevideo = (ImageButton) findViewById(R.id.btn_pausevideo);
     btnPauseaudio = (ImageButton) findViewById(R.id.btn_pauseaudio);
     btn_exit = (ImageButton) findViewById(R.id.btn_exit);
     llcontrols = (LinearLayout) findViewById(R.id.llcontrols);
     tvtimer = (TextView) findViewById(R.id.tvtimer);
-
+    init_info=(TextView)findViewById(R.id.init_info);
+    mAlert = (TextView) findViewById(R.id.quality_warning);
+    mSessionReconnectDialog = new ProgressDialog(OpenTokActivity.this);
+   //for dmaking draggable
+    // /* mPublisherViewContainer.setOnTouchListener(this);*/
     btnPausevideo.setOnClickListener(new View.OnClickListener() {
       @Override
       public void onClick(View view) {
         if (mPublisher.getPublishVideo()) {
           mPublisher.setPublishVideo(false);
-          btnPausevideo.setImageResource(R.mipmap.pause_video);
+          onDisableLocalVideo(false);
+          btnPausevideo.setImageResource(R.drawable.no_video_icon);
         } else {
           mPublisher.setPublishVideo(true);
-          btnPausevideo.setImageResource(R.mipmap.play_video);
+          onDisableLocalVideo(true);
+          btnPausevideo.setImageResource( R.drawable.video_icon);
         }
       }
     });
@@ -114,10 +135,12 @@ public class OpenTokActivity extends AppCompatActivity
       public void onClick(View view) {
         if (mPublisher.getPublishAudio()) {
           mPublisher.setPublishAudio(false);
-          btnPauseaudio.setImageResource(R.mipmap.pause_audio);
+
+          btnPauseaudio.setImageResource(R.drawable.muted_mic_icon);
         } else {
           mPublisher.setPublishAudio(true);
-          btnPauseaudio.setImageResource(R.mipmap.play_audio);
+
+          btnPauseaudio.setImageResource(R.drawable.mic_icon);
         }
 
       }
@@ -143,7 +166,7 @@ public class OpenTokActivity extends AppCompatActivity
       new CountDownTimer(millis, 1000) { // adjust the milli seconds here
 
         public void onTick(long millisUntilFinished) {
-
+          time=millisUntilFinished;
           tvtimer.setText("" + TimeUnit.MILLISECONDS.toHours(millisUntilFinished) + " : " + String.format(FORMAT_2, TimeUnit.MILLISECONDS.toMinutes(millisUntilFinished) - TimeUnit.HOURS.toMinutes(TimeUnit.MILLISECONDS.toHours(millisUntilFinished))) + " : " + String.format(FORMAT_2, TimeUnit.MILLISECONDS.toSeconds(millisUntilFinished) - TimeUnit.MINUTES.toSeconds(TimeUnit.MILLISECONDS.toMinutes(millisUntilFinished))));
         }
 
@@ -177,6 +200,33 @@ public class OpenTokActivity extends AppCompatActivity
 
 
     requestPermissions();
+
+  }
+  public void onDisableLocalVideo(boolean video) {
+    if (!video) {
+          mLocalAudioOnlyImage = new ImageView(this);
+          mLocalAudioOnlyImage.setImageResource(R.mipmap.avatar);
+          mLocalAudioOnlyImage.setBackgroundResource(R.drawable.bckg_audio_only);
+           mPublisherViewContainer.addView(mLocalAudioOnlyImage);
+        } else {
+          mPublisherViewContainer.removeView(mLocalAudioOnlyImage);
+        }
+
+
+  }
+  public void onDisableRemoteVideo(boolean video){
+    if (!video) {
+      avatar = new ImageView(this);
+      avatar.setImageResource(R.mipmap.avatar);
+      avatar.setBackgroundResource(R.drawable.bckg_audio_only);
+      mSubscriberViewContainer.addView(avatar);
+    } else {
+      mSubscriberViewContainer.removeView(avatar);
+    }
+  }
+  public void swapCamera(View view) {
+
+      mPublisher.cycleCamera();
 
   }
   private Runnable hideControllerThread = new Runnable() {
@@ -311,11 +361,29 @@ public class OpenTokActivity extends AppCompatActivity
         }
       }).build();
       mSession.setSessionListener(this);
-      mSession.connect(token);
+      mSession.setReconnectionListener(this);
+      if(mSession!=null){
+        mSession.setSessionListener(this);
+        mSession.connect(token);
+        startPublisherPreview();
+        mPublisher.getView().setId(R.id.publisher_view_id);
+        mPublisherViewContainer.addView(mPublisher.getView());
+        //show connecting dialog
+        mProgressDialog = new ProgressDialog(this);
+        mProgressDialog.setTitle("Please wait");
+        mProgressDialog.setMessage("Connecting...");
+        mProgressDialog.show();
+        //show the messgae when trainer not joined the session
+        init_info.setBackgroundResource(R.color.quality_warning);
+        init_info.setTextColor(OpenTokActivity.this.getResources().getColor(R.color.white));
+        init_info.bringToFront();
+        init_info.setVisibility(View.VISIBLE);
+      } else {
+        Log.e(TAG, "OpenTok credentials are invalid");
+        Toast.makeText(OpenTokActivity.this, "Credentials are invalid", Toast.LENGTH_LONG).show();
+        this.finish();
+      }
 
-      startPublisherPreview();
-      mPublisher.getView().setId(R.id.publisher_view_id);
-      mPublisherViewContainer.addView(mPublisher.getView());
 //      mContainer.addView(mPublisher.getView());
 //      calculateLayout();
     } else {
@@ -326,8 +394,8 @@ public class OpenTokActivity extends AppCompatActivity
   @Override
   public void onConnected(Session session) {
     Log.d(TAG, "onConnected: Connected to session " + session.getSessionId());
-
     mSession.publish(mPublisher);
+    mProgressDialog.dismiss();
   }
 
   @Override
@@ -340,6 +408,7 @@ public class OpenTokActivity extends AppCompatActivity
   @Override
   public void onError(Session session, OpentokError opentokError) {
     Log.d(TAG, "onError: Error (" + opentokError.getMessage() + ") in session " + session.getSessionId());
+    mProgressDialog.dismiss();
 
     Toast.makeText(this, "Session error. See the logcat please.", Toast.LENGTH_LONG).show();
     finish();
@@ -359,8 +428,11 @@ public class OpenTokActivity extends AppCompatActivity
     String publisherId = stream.getConnection().getData();
 
     if (this.publisherId.equalsIgnoreCase(publisherId)) {
-      final Subscriber subscriber = new Subscriber.Builder(OpenTokActivity.this, stream).build();
+     //show loader when subscriber is joining a session
 
+      final Subscriber subscriber = new Subscriber.Builder(OpenTokActivity.this, stream).build();
+      init_info.setVisibility(View.GONE);
+      subscriber.setVideoListener(OpenTokActivity.this);
       mSession.subscribe(subscriber);
       mSubscribers.add(subscriber);
       mSubscriberStreams.put(stream, subscriber);
@@ -368,7 +440,12 @@ public class OpenTokActivity extends AppCompatActivity
       int subId = getResIdForSubscriberIndex(mSubscribers.size() - 1);
       subscriber.getView().setId(subId);
 //      mContainer.addView(subscriber.getView());
+
+
       mSubscriberViewContainer.addView(subscriber.getView());
+    //stop loading spinning
+
+
 
 //      calculateLayout();
     }
@@ -387,7 +464,11 @@ public class OpenTokActivity extends AppCompatActivity
     mSubscriberStreams.remove(stream);
 //    mContainer.removeView(subscriber.getView());
     mSubscriberViewContainer.removeView(subscriber.getView());
-
+    mSubscriberViewContainer.removeView(avatar);
+    init_info.setBackgroundResource(R.color.quality_warning);
+    init_info.setTextColor(OpenTokActivity.this.getResources().getColor(R.color.white));
+    init_info.bringToFront();
+    init_info.setVisibility(View.VISIBLE);
     // Recalculate view Ids
     for (int i = 0; i < mSubscribers.size(); i++) {
       mSubscribers.get(i).getView().setId(getResIdForSubscriberIndex(i));
@@ -398,6 +479,8 @@ public class OpenTokActivity extends AppCompatActivity
   @Override
   public void onStreamCreated(PublisherKit publisherKit, Stream stream) {
     Log.d(TAG, "onStreamCreated: Own stream " + stream.getStreamId() + " created");
+
+
   }
 
   @Override
@@ -408,7 +491,7 @@ public class OpenTokActivity extends AppCompatActivity
   @Override
   public void onError(PublisherKit publisherKit, OpentokError opentokError) {
     Log.d(TAG, "onError: Error (" + opentokError.getMessage() + ") in publisher");
-
+    mProgressDialog.dismiss();
     Toast.makeText(this, "Session error. See the logcat please.", Toast.LENGTH_LONG).show();
     finish();
   }
@@ -502,5 +585,85 @@ public class OpenTokActivity extends AppCompatActivity
     }
     mSession.disconnect();
   }
+
+
+  @Override
+  public void onReconnecting(Session session) {
+    showReconnectionDialog(true);
+  }
+
+  @Override
+  public void onReconnected(Session session) {
+    showReconnectionDialog(false);
+  }
+
+  private void showReconnectionDialog(boolean show) {
+    if (show) {
+      mSessionReconnectDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+      mSessionReconnectDialog.setMessage("Reconnecting. Please wait...");
+      mSessionReconnectDialog.setIndeterminate(true);
+      mSessionReconnectDialog.setCanceledOnTouchOutside(false);
+      mSessionReconnectDialog.show();
+    }
+    else {
+      mSessionReconnectDialog.dismiss();
+      AlertDialog.Builder builder = new AlertDialog.Builder(OpenTokActivity.this);
+      builder.setMessage("Session has been reconnected")
+        .setPositiveButton(android.R.string.ok, null);
+      builder.create();
+      builder.show();
+    }
+  }
+
+
+  @Override
+  public void onVideoDataReceived(SubscriberKit subscriberKit) {
+
+  }
+
+  @Override
+  public void onVideoDisabled(SubscriberKit subscriberKit, String s) {
+    onDisableRemoteVideo(false);
+  }
+
+  @Override
+  public void onVideoEnabled(SubscriberKit subscriberKit, String s) {
+    onDisableRemoteVideo(true);
+  }
+
+  @Override
+  public void onVideoDisableWarning(SubscriberKit subscriberKit) {
+
+  }
+
+  @Override
+  public void onVideoDisableWarningLifted(SubscriberKit subscriberKit) {
+
+  }
+  //move self video on screen draggable
+
+ /* public boolean onTouch(View view, MotionEvent event) {
+
+    switch (event.getAction()) {
+
+      case MotionEvent.ACTION_DOWN:
+
+        dX = view.getX() - event.getRawX();
+        dY = view.getY() - event.getRawY();
+        break;
+
+      case MotionEvent.ACTION_MOVE:
+
+        view.animate()
+          .x(event.getRawX() + dX)
+          .y(event.getRawY() + dY)
+          .setDuration(0)
+          .start();
+        break;
+      default:
+        return false;
+    }
+    return true;
+  }*/
 
 }
