@@ -1,6 +1,7 @@
 package com.fitbase.TokBox;
 
 import android.Manifest;
+import android.app.Dialog; 
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.res.TypedArray;
@@ -70,7 +71,7 @@ long time;
   private ArrayList<Subscriber> mSubscribers = new ArrayList<Subscriber>();
   private HashMap<Stream, Subscriber> mSubscriberStreams = new HashMap<Stream, Subscriber>();
 
-  Set<String> connectionMetaData = new HashSet<String>();
+  Set<String> connectionMetaData = new HashSet<String>(); 
   //  private ConstraintLayout mContainer;
   private RelativeLayout mPublisherViewContainer;
   private RelativeLayout mSubscriberViewContainer;
@@ -225,10 +226,13 @@ private RelativeLayout actionBar;
   }
   public void onDisableRemoteVideo(boolean video){
     if (!video) {
+       RelativeLayout.LayoutParams layoutParams = new RelativeLayout.LayoutParams(
+        this.getResources().getDisplayMetrics().widthPixels, this.getResources()
+        .getDisplayMetrics().heightPixels);
       avatar = new ImageView(this);
       avatar.setImageResource(R.mipmap.avatar);
       avatar.setBackgroundResource(R.drawable.bckg_audio_only);
-      mSubscriberViewContainer.addView(avatar);
+      mSubscriberViewContainer.addView(avatar,layoutParams);
     } else {
       mSubscriberViewContainer.removeView(avatar);
     }
@@ -381,6 +385,7 @@ private RelativeLayout actionBar;
         mPublisherViewContainer.addView(mPublisher.getView());
         //show connecting dialog
         mProgressDialog = new ProgressDialog(this);
+        mProgressDialog.setCanceledOnTouchOutside(false);
         mProgressDialog.setTitle("Please wait");
         mProgressDialog.setMessage("Connecting...");
         mProgressDialog.show();
@@ -405,6 +410,8 @@ private RelativeLayout actionBar;
   @Override
   public void onConnected(Session session) {
     Log.d(TAG, "onConnected: Connected to session " + session.getSessionId());
+    key=session.getConnection().getData();
+    connectionMetaData.add(key); 
     mSession.publish(mPublisher);
     mProgressDialog.dismiss();
   }
@@ -618,30 +625,31 @@ private RelativeLayout actionBar;
     }
     else {
       mSessionReconnectDialog.dismiss();
-      AlertDialog.Builder builder = new AlertDialog.Builder(OpenTokActivity.this);
+      AlertDialog.Builder builder = new AlertDialog.Builder(OpenTokActivity.this); 
       builder.setMessage("Session has been reconnected")
         .setPositiveButton(android.R.string.ok, null);
       builder.create();
       builder.show();
     }
   }
-  @Override
-  public void onConnectionCreated(Session session, Connection connection)
-  {   totalConnections++;
-   key=connection.getData();
-    if(mSession.getConnection().getConnectionId()==connection.getConnectionId()&&!connectionMetaData.contains(key)){
-      connectionMetaData.add(key);
+    @Override
+  public void onConnectionCreated(Session session, Connection connection) {
+    totalConnections++;
+    key=connection.getData();
+    if(connectionMetaData.contains(key)){
+      if(mSession.getConnection().getConnectionId()==session.getConnection().getConnectionId()){
+        isWantToContinueHere=false;
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setCancelable(false);
+        Dialog dialog = builder.create();
+        dialog.setCanceledOnTouchOutside(false);  
+        builder.setMessage("Looks like your stream is already running ! Do you want it to start here..?").setPositiveButton("Yes", dialogClickListener)
+                .setNegativeButton("No", dialogClickListener).show();
+      }
     }else{
-            isWantToContinueHere=false;
-      AlertDialog.Builder builder = new AlertDialog.Builder(this);
-      builder.setMessage("Looks like your stream is already running ! Do you want it to start here..?").setPositiveButton("Yes", dialogClickListener)
-        .setNegativeButton("No", dialogClickListener).show();
+      connectionMetaData.add(key);
     }
-
-
-    // New client connected to the session
   }
-
   DialogInterface.OnClickListener dialogClickListener = new DialogInterface.OnClickListener() {
     @Override
     public void onClick(DialogInterface dialog, int which) {
