@@ -2,6 +2,7 @@ package com.fitbase.TokBox;
 
 import android.Manifest;
 import android.app.ProgressDialog;
+import android.content.DialogInterface;
 import android.content.res.TypedArray;
 import android.os.Bundle;
 import android.os.CountDownTimer;
@@ -25,6 +26,7 @@ import android.widget.Toast;
 import com.fitbase.MainActivity;
 import com.fitbase.R;
 import com.opentok.android.BaseVideoRenderer;
+import com.opentok.android.Connection;
 import com.opentok.android.OpentokError;
 import com.opentok.android.Publisher;
 import com.opentok.android.PublisherKit;
@@ -41,8 +43,10 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
+import java.util.Set;
 import java.util.TimeZone;
 import java.util.concurrent.TimeUnit;
 
@@ -54,7 +58,7 @@ import pub.devrel.easypermissions.EasyPermissions;
 public class OpenTokActivity extends AppCompatActivity
         implements EasyPermissions.PermissionCallbacks,
         Publisher.PublisherListener,
-        Session.SessionListener, Session.ReconnectionListener ,Subscriber.VideoListener{
+        Session.SessionListener, Session.ReconnectionListener ,Subscriber.VideoListener,Session.SignalListener,Session.ConnectionListener{
 
   private static final String TAG = MainActivity.class.getSimpleName();
   private static final int RC_SETTINGS_SCREEN_PERM = 123;
@@ -66,14 +70,15 @@ long time;
   private ArrayList<Subscriber> mSubscribers = new ArrayList<Subscriber>();
   private HashMap<Stream, Subscriber> mSubscriberStreams = new HashMap<Stream, Subscriber>();
 
+  Set<String> connectionMetaData = new HashSet<String>();
   //  private ConstraintLayout mContainer;
   private RelativeLayout mPublisherViewContainer;
   private RelativeLayout mSubscriberViewContainer;
   private ImageView mLocalAudioOnlyImage,avatar;
   private ProgressDialog mProgressDialog,mSessionReconnectDialog;
+  String key;
 
-
-  private String tokBoxData, apiKey, token, sessionId, publisherId, duration, startdate;
+  private String tokBoxData, apiKey, token, sessionId, publisherId, duration, startdate,logedInUserId;
 private RelativeLayout actionBar;
   ImageButton btnPausevideo, btnPauseaudio, btn_exit;
   private Handler hidehandler;
@@ -81,6 +86,9 @@ private RelativeLayout actionBar;
   private TextView tvtimer,init_info,  mAlert;
   float dX, dY;
   private static final String FORMAT_2 = "%02d";
+  private int totalConnections=0;
+    public static final String SIGNAL_TYPE = "closeConnection";
+  public boolean isWantToContinueHere;
   @Override
   protected void onCreate(Bundle savedInstanceState) {
     Log.d(TAG, "onCreate");
@@ -97,6 +105,7 @@ private RelativeLayout actionBar;
       publisherId = jobj.getString("trainerUserid");
       duration = jobj.getString("duration");
       startdate = jobj.getString("startDate");
+      logedInUserId=jobj.getString("logedInUserId");
     } catch (Exception e) {
       e.printStackTrace();
     }
@@ -364,6 +373,8 @@ private RelativeLayout actionBar;
       mSession.setReconnectionListener(this);
       if(mSession!=null){
         mSession.setSessionListener(this);
+        mSession.setSignalListener(this);
+        mSession.setConnectionListener(this);
         mSession.connect(token);
         startPublisherPreview();
         mPublisher.getView().setId(R.id.publisher_view_id);
@@ -614,7 +625,43 @@ private RelativeLayout actionBar;
       builder.show();
     }
   }
+  @Override
+  public void onConnectionCreated(Session session, Connection connection)
+  {   totalConnections++;
+   key=connection.getData();
+    if(mSession.getConnection().getConnectionId()==connection.getConnectionId()&&!connectionMetaData.contains(key)){
+      connectionMetaData.add(key);
+    }else{
+            isWantToContinueHere=false;
+      AlertDialog.Builder builder = new AlertDialog.Builder(this);
+      builder.setMessage("Looks like your stream is already running ! Do you want it to start here..?").setPositiveButton("Yes", dialogClickListener)
+        .setNegativeButton("No", dialogClickListener).show();
+    }
 
+
+    // New client connected to the session
+  }
+
+  DialogInterface.OnClickListener dialogClickListener = new DialogInterface.OnClickListener() {
+    @Override
+    public void onClick(DialogInterface dialog, int which) {
+      switch (which){
+        case DialogInterface.BUTTON_POSITIVE:
+          mSession.sendSignal(SIGNAL_TYPE, key);
+          isWantToContinueHere=true;
+          break;
+
+        case DialogInterface.BUTTON_NEGATIVE:
+          onBackPressed();
+          break;
+      }
+    }
+  };
+
+  @Override
+  public void onConnectionDestroyed(Session session, Connection connection) {
+
+  }
 
   @Override
   public void onVideoDataReceived(SubscriberKit subscriberKit) {
@@ -639,6 +686,14 @@ private RelativeLayout actionBar;
   @Override
   public void onVideoDisableWarningLifted(SubscriberKit subscriberKit) {
 
+  }
+
+  @Override
+  public void onSignalReceived(Session session, String type, String data, Connection connection) {
+
+    if (!isWantToContinueHere && type != null && type.equals(SIGNAL_TYPE) && data.equals(logedInUserId)) {
+    onBackPressed();
+    }
   }
   //move self video on screen draggable
 
