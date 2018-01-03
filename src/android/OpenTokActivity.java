@@ -1,7 +1,7 @@
 package com.fitbase.TokBox;
 
 import android.Manifest;
-import android.app.Dialog; 
+import android.app.Dialog; 
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.res.TypedArray;
