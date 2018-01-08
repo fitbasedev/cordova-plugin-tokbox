@@ -59,7 +59,36 @@
 
     </RelativeLayout>
     </RelativeLayout>
+  <RelativeLayout
+    android:id="@+id/publisher_container"
+    android:layout_width="@dimen/publisher_width"
+    android:layout_height="@dimen/publisher_height"
+    android:layout_alignParentBottom="true"
+    android:layout_marginBottom="60dp"
+    android:layout_above="@+id/llcontrols"
+    android:layout_marginLeft="@dimen/publisher_end_margin"
+    android:background="@color/publisher_border_color">
 
+    <RelativeLayout
+      android:id="@+id/localAudioOnlyView"
+      android:layout_width="match_parent"
+      android:layout_height="match_parent"
+      android:layout_alignParentLeft="true"
+      android:layout_alignParentTop="true"
+      android:background="@drawable/gradient_audionly"
+      android:visibility="gone" >
+
+      <ImageView
+        android:id="@+id/localAvatar"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="30dp"
+        android:src="@mipmap/avatar" />
+
+    </RelativeLayout>
+    </RelativeLayout>
         <LinearLayout
             android:id="@+id/llcontrols"
             android:layout_width="match_parent"
@@ -123,35 +152,6 @@
         </LinearLayout>
 
 
-  <RelativeLayout
-    android:id="@+id/publisher_container"
-    android:layout_width="@dimen/publisher_width"
-    android:layout_height="@dimen/publisher_height"
-    android:layout_alignParentBottom="true"
-    android:layout_marginBottom="60dp"
-    android:layout_above="@+id/llcontrols"
-    android:layout_marginLeft="@dimen/publisher_end_margin"
-    android:background="@color/publisher_border_color">
 
-    <RelativeLayout
-      android:id="@+id/localAudioOnlyView"
-      android:layout_width="match_parent"
-      android:layout_height="match_parent"
-      android:layout_alignParentLeft="true"
-      android:layout_alignParentTop="true"
-      android:background="@drawable/gradient_audionly"
-      android:visibility="gone" >
-
-      <ImageView
-        android:id="@+id/localAvatar"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:layout_centerHorizontal="true"
-        android:layout_marginBottom="30dp"
-        android:src="@mipmap/avatar" />
-
-    </RelativeLayout>
-    </RelativeLayout>
   </RelativeLayout>
 </android.support.constraint.ConstraintLayout>
