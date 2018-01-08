@@ -129,6 +129,7 @@
     android:layout_height="@dimen/publisher_height"
     android:layout_alignParentBottom="true"
     android:layout_marginBottom="60dp"
+    android:layout_above="@+id/llcontrols"
     android:layout_marginLeft="@dimen/publisher_end_margin"
     android:background="@color/publisher_border_color">
 
