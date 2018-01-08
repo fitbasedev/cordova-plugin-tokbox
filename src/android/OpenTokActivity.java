@@ -5,6 +5,7 @@ import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.res.TypedArray;
+import android.view.WindowManager;
 import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.os.Handler;
@@ -88,7 +89,8 @@ private RelativeLayout actionBar;
   float dX, dY;
   private static final String FORMAT_2 = "%02d";
   private int totalConnections=0;
-    public static final String SIGNAL_TYPE = "closeConnection";
+  public static final String SIGNAL_TYPE = "closeConnection";
+  private boolean FLAG_KEEP_SCREEN_ON=false;
   public boolean isWantToContinueHere;
   @Override
   protected void onCreate(Bundle savedInstanceState) {
@@ -96,6 +98,7 @@ private RelativeLayout actionBar;
 
     super.onCreate(savedInstanceState);
     setContentView(R.layout.activity_main);
+    getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
     hidehandler = new Handler();
     tokBoxData = getIntent().getStringExtra("tokbox_obj");
     try {
@@ -158,6 +161,7 @@ private RelativeLayout actionBar;
     btn_exit.setOnClickListener(new View.OnClickListener() {
       @Override
       public void onClick(View view) {
+        getWindow().clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
         onBackPressed();
       }
     });
@@ -477,7 +481,7 @@ private RelativeLayout actionBar;
     if (subscriber == null) {
       return;
     }
-
+    connectionMetaData.remove(stream.getConnection().getData());
     mSubscribers.remove(subscriber);
     mSubscriberStreams.remove(stream);
 //    mContainer.removeView(subscriber.getView());
