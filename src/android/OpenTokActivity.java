@@ -115,7 +115,7 @@ private RelativeLayout actionBar;
     }
 
 
-//    mContainer = (ConstraintLayout) findViewById(R.id.main_container);
+ 
     // initialize view objects from your layout
     mPublisherViewContainer = (RelativeLayout) findViewById(R.id.publisher_container);
     mSubscriberViewContainer = (RelativeLayout) findViewById(R.id.subscriber_container);
@@ -127,8 +127,8 @@ private RelativeLayout actionBar;
     init_info=(TextView)findViewById(R.id.init_info);
     mAlert = (TextView) findViewById(R.id.quality_warning);
     mSessionReconnectDialog = new ProgressDialog(OpenTokActivity.this);
-   //for dmaking draggable
-    // /* mPublisherViewContainer.setOnTouchListener(this);*/
+   //for publisher container making draggable 
+    mPublisherViewContainer.setOnTouchListener(new OnDragTouchListener(mPublisherViewContainer));
     btnPausevideo.setOnClickListener(new View.OnClickListener() {
       @Override
       public void onClick(View view) {
@@ -249,14 +249,9 @@ private RelativeLayout actionBar;
   private Runnable hideControllerThread = new Runnable() {
 
     public void run() {
-//      volumeBar.setVisibility(View.GONE);
-//      audioControllView.setVisibility(View.GONE);
-//      topBar.setVisibility(View.GONE);
-      llcontrols.setVisibility(View.GONE);
-//      RelativeLayout.LayoutParams params=new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.WRAP_CONTENT,RelativeLayout.LayoutParams.WRAP_CONTENT);
-//      params.setMargins(10, 0, 0, 10);
-//      mSubscriberViewContainer.setLayoutParams(params);
-//      btnPauseaudio.setVisibility(View.GONE);
+ 
+  llcontrols.setVisibility(View.GONE);
+ 
     }
   };
 
@@ -266,14 +261,9 @@ private RelativeLayout actionBar;
   }
 
   public void showControllers() {
-//    volumeBar.setVisibility(View.VISIBLE);
-//    topBar.setVisibility(View.VISIBLE);
-//    audioControllView.setVisibility(View.VISIBLE);
+ 
     llcontrols.setVisibility(View.VISIBLE);
-//    RelativeLayout.LayoutParams params=new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.WRAP_CONTENT,RelativeLayout.LayoutParams.WRAP_CONTENT);
-//    params.setMargins(10, 0, 0, 60);
-//    mSubscriberViewContainer.setLayoutParams(params);
-//    btnPauseaudio.setVisibility(View.VISIBLE);
+ 
     hidehandler.removeCallbacks(hideControllerThread);
     hideControllers();
   }
@@ -404,8 +394,7 @@ private RelativeLayout actionBar;
         this.finish();
       }
 
-//      mContainer.addView(mPublisher.getView());
-//      calculateLayout();
+ 
     } else {
       EasyPermissions.requestPermissions(this, getString(R.string.rationale_video_app), RC_VIDEO_APP_PERM, perms);
     }
@@ -461,7 +450,7 @@ private RelativeLayout actionBar;
 
       int subId = getResIdForSubscriberIndex(mSubscribers.size() - 1);
       subscriber.getView().setId(subId);
-//      mContainer.addView(subscriber.getView());
+ 
 
 
       mSubscriberViewContainer.addView(subscriber.getView());
@@ -469,7 +458,7 @@ private RelativeLayout actionBar;
 
 
 
-//      calculateLayout();
+ 
     }
   }
 
@@ -484,7 +473,7 @@ private RelativeLayout actionBar;
     connectionMetaData.remove(stream.getConnection().getData());
     mSubscribers.remove(subscriber);
     mSubscriberStreams.remove(stream);
-//    mContainer.removeView(subscriber.getView());
+ 
     mSubscriberViewContainer.removeView(subscriber.getView());
     mSubscriberViewContainer.removeView(avatar);
     init_info.setBackgroundResource(R.color.quality_warning);
@@ -495,7 +484,7 @@ private RelativeLayout actionBar;
     for (int i = 0; i < mSubscribers.size(); i++) {
       mSubscribers.get(i).getView().setId(getResIdForSubscriberIndex(i));
     }
-//    calculateLayout();
+ 
   }
 
   @Override
@@ -518,71 +507,7 @@ private RelativeLayout actionBar;
     finish();
   }
 
-//  private void calculateLayout() {
-//    ConstraintSetHelper set = new ConstraintSetHelper(R.id.main_container);
-//
-//    int size = mSubscribers.size();
-//    if (size == 0) {
-//      // Publisher full screen
-//      set.layoutViewFullScreen(R.id.publisher_view_id);
-//    } else if (size == 1) {
-//      // Publisher
-//      // Subscriber
-//      set.layoutViewAboveView(R.id.publisher_view_id, getResIdForSubscriberIndex(0));
-//      set.layoutViewWithTopBound(R.id.publisher_view_id, R.id.main_container);
-//      set.layoutViewWithBottomBound(getResIdForSubscriberIndex(0), R.id.main_container);
-//      set.layoutViewAllContainerWide(R.id.publisher_view_id, R.id.main_container);
-//      set.layoutViewAllContainerWide(getResIdForSubscriberIndex(0), R.id.main_container);
-//
-//    } else if (size > 1 && size % 2 == 0) {
-//      //  Publisher
-//      // Sub1 | Sub2
-//      // Sub3 | Sub4
-//      //    .....
-//      set.layoutViewWithTopBound(R.id.publisher_view_id, R.id.main_container);
-//      set.layoutViewAllContainerWide(R.id.publisher_view_id, R.id.main_container);
-//
-//      for (int i = 0; i < size; i += 2) {
-//        if (i == 0) {
-//          set.layoutViewAboveView(R.id.publisher_view_id, getResIdForSubscriberIndex(i));
-//          set.layoutViewAboveView(R.id.publisher_view_id, getResIdForSubscriberIndex(i + 1));
-//        } else {
-//          set.layoutViewAboveView(getResIdForSubscriberIndex(i - 2), getResIdForSubscriberIndex(i));
-//          set.layoutViewAboveView(getResIdForSubscriberIndex(i - 1), getResIdForSubscriberIndex(i + 1));
-//        }
-//
-//        set.layoutTwoViewsOccupyingAllRow(getResIdForSubscriberIndex(i), getResIdForSubscriberIndex(i + 1));
-//      }
-//
-//      set.layoutViewWithBottomBound(getResIdForSubscriberIndex(size - 2), R.id.main_container);
-//      set.layoutViewWithBottomBound(getResIdForSubscriberIndex(size - 1), R.id.main_container);
-//    } else if (size > 1) {
-//      // Pub  | Sub1
-//      // Sub2 | Sub3
-//      // Sub3 | Sub4
-//      //    .....
-//
-//      set.layoutViewWithTopBound(R.id.publisher_view_id, R.id.main_container);
-//      set.layoutViewWithTopBound(getResIdForSubscriberIndex(0), R.id.main_container);
-//      set.layoutTwoViewsOccupyingAllRow(R.id.publisher_view_id, getResIdForSubscriberIndex(0));
-//
-//      for (int i = 1; i < size; i += 2) {
-//        if (i == 1) {
-//          set.layoutViewAboveView(R.id.publisher_view_id, getResIdForSubscriberIndex(i));
-//          set.layoutViewAboveView(getResIdForSubscriberIndex(0), getResIdForSubscriberIndex(i + 1));
-//        } else {
-//          set.layoutViewAboveView(getResIdForSubscriberIndex(i - 2), getResIdForSubscriberIndex(i));
-//          set.layoutViewAboveView(getResIdForSubscriberIndex(i - 1), getResIdForSubscriberIndex(i + 1));
-//        }
-//        set.layoutTwoViewsOccupyingAllRow(getResIdForSubscriberIndex(i), getResIdForSubscriberIndex(i + 1));
-//      }
-//
-//      set.layoutViewWithBottomBound(getResIdForSubscriberIndex(size - 2), R.id.main_container);
-//      set.layoutViewWithBottomBound(getResIdForSubscriberIndex(size - 1), R.id.main_container);
-//    }
-//
-//    set.applyToLayout(mContainer, true);
-//  }
+ 
 
   private void disconnectSession() {
     if (mSession == null) {
@@ -707,30 +632,5 @@ private RelativeLayout actionBar;
     onBackPressed();
     }
   }
-  //move self video on screen draggable
-
- /* public boolean onTouch(View view, MotionEvent event) {
-
-    switch (event.getAction()) {
-
-      case MotionEvent.ACTION_DOWN:
-
-        dX = view.getX() - event.getRawX();
-        dY = view.getY() - event.getRawY();
-        break;
-
-      case MotionEvent.ACTION_MOVE:
-
-        view.animate()
-          .x(event.getRawX() + dX)
-          .y(event.getRawY() + dY)
-          .setDuration(0)
-          .start();
-        break;
-      default:
-        return false;
-    }
-    return true;
-  }*/
-
-}
+    
+     }

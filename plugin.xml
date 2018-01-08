@@ -44,6 +44,7 @@
 		<framework src="plugin.gradle" custom="true" type="gradleReference" />
         <source-file src="src/android/TokBox.java" target-dir="src/com/fitbase/TokBox" />
 		<source-file src="src/android/OpenTokActivity.java" target-dir="src/com/fitbase/TokBox"/>
+		<source-file src="src/android/OnDragTouchListener.java" target-dir="src/com/fitbase/TokBox"/>
 		
 		<resource-file src="src/android/layouts/activity_main.xml" target="res/layout/activity_main.xml"/>		
 		<resource-file src="src/android/layouts/colors.xml" target="res/values/colors.xml"/>
