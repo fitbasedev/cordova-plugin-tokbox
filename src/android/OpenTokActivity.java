@@ -597,7 +597,7 @@ private RelativeLayout actionBar;
 
   @Override
   public void onConnectionDestroyed(Session session, Connection connection) {
-
+  connectionMetaData.remove(connection.getData());
   }
 
   @Override
@@ -628,7 +628,8 @@ private RelativeLayout actionBar;
   @Override
   public void onSignalReceived(Session session, String type, String data, Connection connection) {
 
-    if (!isWantToContinueHere && type != null && type.equals(SIGNAL_TYPE) && data.equals(logedInUserId)) {
+    String myConnectionId = session.getConnection().getConnectionId();
+    if (!connection.getConnectionId().equals(myConnectionId) && type != null && type.equals(SIGNAL_TYPE) && data.equals(logedInUserId)) {
     onBackPressed();
     }
   }
