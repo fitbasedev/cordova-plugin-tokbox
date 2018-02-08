@@ -100,15 +100,6 @@
     </platform>
 
 
-	<!-- ios -->
-	<platform name="ios">
-    	<config-file target="config.xml" parent="/*">
-      		<feature name="TokBox">
-        		<param name="ios-package" value="TokBox"/>
-      		</feature>
-    	</config-file>
-    	<header-file src="src/ios/TokBox.h"/>
-    	<source-file src="src/ios/TokBox.m"/>
-  	</platform>
+ 
 
 </plugin>
