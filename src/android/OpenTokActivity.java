@@ -238,6 +238,7 @@ private RelativeLayout actionBar;
       avatar.setImageResource(R.mipmap.avatar);
       avatar.setBackgroundResource(R.drawable.bckg_audio_only);
       mSubscriberViewContainer.addView(avatar,layoutParams);
+      remoteControls.bringToFront();
     } else {
       mSubscriberViewContainer.removeView(avatar);
     }
@@ -471,6 +472,7 @@ private RelativeLayout actionBar;
       mSubscriberViewContainer.addView(subscriber.getView());
       remoteControls.setVisibility(View.VISIBLE);
       remoteControls.bringToFront();
+
     //stop loading spinning
 
 
