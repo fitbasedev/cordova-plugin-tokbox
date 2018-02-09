@@ -65,6 +65,8 @@
 		<resource-file src="src/android/images/drawable-hdpi/muted_mic_icon.png" target="res/drawable-hdpi/muted_mic_icon.png"/>
 		<resource-file src="src/android/images/drawable-hdpi/no_video_icon.png" target="res/drawable-hdpi/no_video_icon.png"/>
 		<resource-file src="src/android/images/drawable-hdpi/video_icon.png" target="res/drawable-hdpi/video_icon.png"/>
+		<resource-file src="src/android/images/drawable-hdpi/audio.png" target="res/drawable-hdpi/audio.png"/>
+		<resource-file src="src/android/images/drawable-hdpi/no_audio.png" target="res/drawable-hdpi/no_audio.png"/>
 
 		<resource-file src="src/android/images/drawable-mdpi/avatar.png" target="res/drawable-mdpi/avatar.png"/>
 		<resource-file src="src/android/images/drawable-mdpi/camera.png" target="res/drawable-mdpi/camera.png"/>
@@ -73,6 +75,8 @@
 		<resource-file src="src/android/images/drawable-mdpi/muted_mic_icon.png" target="res/drawable-mdpi/muted_mic_icon.png"/>
 		<resource-file src="src/android/images/drawable-mdpi/no_video_icon.png" target="res/drawable-mdpi/no_video_icon.png"/>
 		<resource-file src="src/android/images/drawable-mdpi/video_icon.png" target="res/drawable-mdpi/video_icon.png"/>
+		<resource-file src="src/android/images/drawable-mdpi/audio.png" target="res/drawable-mdpi/audio.png"/>
+		<resource-file src="src/android/images/drawable-mdpi/no_audio.png" target="res/drawable-mdpi/no_audio.png"/>
 
 		<resource-file src="src/android/images/drawable-xhdpi/avatar.png" target="res/drawable-xhdpi/avatar.png"/>
 		<resource-file src="src/android/images/drawable-xhdpi/camera.png" target="res/drawable-xhdpi/camera.png"/>
@@ -80,6 +84,8 @@
 		<resource-file src="src/android/images/drawable-xhdpi/mic_icon.png" target="res/drawable-xhdpi/mic_icon.png"/>
 		<resource-file src="src/android/images/drawable-xhdpi/no_video_icon.png" target="res/drawable-xhdpi/no_video_icon.png"/>
 		<resource-file src="src/android/images/drawable-xhdpi/video_icon.png" target="res/drawable-xhdpi/video_icon.png"/>
+		<resource-file src="src/android/images/drawable-xhdpi/audio.png" target="res/drawable-xhdpi/audio.png"/>
+		<resource-file src="src/android/images/drawable-xhdpi/no_audio.png" target="res/drawable-xhdpi/no_audio.png"/>
 
 		<resource-file src="src/android/images/drawable-xxhdpi/avatar.png" target="res/drawable-xxhdpi/avatar.png"/>
 		<resource-file src="src/android/images/drawable-xxhdpi/camera.png" target="res/drawable-xxhdpi/camera.png"/>
@@ -88,6 +94,8 @@
 		<resource-file src="src/android/images/drawable-xxhdpi/muted_mic_icon.png" target="res/drawable-xxhdpi/muted_mic_icon.png"/>
         <resource-file src="src/android/images/drawable-xxhdpi/no_video_icon.png" target="res/drawable-xxhdpi/no_video_icon.png"/>
 		<resource-file src="src/android/images/drawable-xxhdpi/video_icon.png" target="res/drawable-xxhdpi/video_icon.png"/>
+		<resource-file src="src/android/images/drawable-xxhdpi/audio.png" target="res/drawable-xxhdpi/audio.png"/>
+		<resource-file src="src/android/images/drawable-xxhdpi/no_audio.png" target="res/drawable-xxhdpi/no_audio.png"/>
 
 	 
 		<resource-file src="src/android/images/drawable-xxxhdpi/camera.png" target="res/drawable-xxxhdpi/camera.png"/>
@@ -96,7 +104,11 @@
 		<resource-file src="src/android/images/drawable-xxxhdpi/muted_mic_icon.png" target="res/drawable-xxxhdpi/muted_mic_icon.png"/>
 		<resource-file src="src/android/images/drawable-xxxhdpi/no_video_icon.png" target="res/drawable-xxxhdpi/no_video_icon.png"/>
 		<resource-file src="src/android/images/drawable-xxxhdpi/video_icon.png" target="res/drawable-xxxhdpi/video_icon.png"/>
+		<resource-file src="src/android/images/drawable-xxxhdpi/audio.png" target="res/drawable-xxxhdpi/audio.png"/>
+		<resource-file src="src/android/images/drawable-xxxhdpi/no_audio.png" target="res/drawable-xxxhdpi/no_audio.png"/>
 		<resource-file src="src/android/images/mipmap-ldpi/avatar.png" target="res/mipmap/avatar.png"/>
+
+
     </platform>
 
 

@@ -74,7 +74,7 @@ long time;
 
   Set<String> connectionMetaData = new HashSet<String>(); 
   //  private ConstraintLayout mContainer;
-  private RelativeLayout mPublisherViewContainer;
+  private RelativeLayout mPublisherViewContainer,remoteControls;
   private RelativeLayout mSubscriberViewContainer;
   private ImageView mLocalAudioOnlyImage,avatar;
   private ProgressDialog mProgressDialog,mSessionReconnectDialog;
@@ -121,6 +121,7 @@ private RelativeLayout actionBar;
     mSubscriberViewContainer = (RelativeLayout) findViewById(R.id.subscriber_container);
     btnPausevideo = (ImageButton) findViewById(R.id.btn_pausevideo);
     btnPauseaudio = (ImageButton) findViewById(R.id.btn_pauseaudio);
+    remoteControls=(RelativeLayout) findViewById(R.id.remoteControls) ;
     btn_exit = (ImageButton) findViewById(R.id.btn_exit);
     llcontrols = (LinearLayout) findViewById(R.id.llcontrols);
     tvtimer = (TextView) findViewById(R.id.tvtimer);
@@ -239,6 +240,20 @@ private RelativeLayout actionBar;
       mSubscriberViewContainer.addView(avatar,layoutParams);
     } else {
       mSubscriberViewContainer.removeView(avatar);
+    }
+  }
+   public void onRemoteAudioChanged(View v) {
+    if(mSubscribers.size()==0){
+      return;
+    }
+    boolean enableAudioOnly = mSubscribers.get(0).getSubscribeToAudio();
+    if (enableAudioOnly) {
+      mSubscribers.get(0).setSubscribeToAudio(false);
+      ((ImageButton)v).setImageResource(R.drawable.no_audio);
+    }
+    else {
+      mSubscribers.get(0).setSubscribeToAudio(true);
+      ((ImageButton)v).setImageResource(R.drawable.audio);
     }
   }
   public void swapCamera(View view) {
@@ -454,6 +469,8 @@ private RelativeLayout actionBar;
 
 
       mSubscriberViewContainer.addView(subscriber.getView());
+      remoteControls.setVisibility(View.VISIBLE);
+      remoteControls.bringToFront();
     //stop loading spinning
 
 
@@ -480,6 +497,7 @@ private RelativeLayout actionBar;
     init_info.setTextColor(OpenTokActivity.this.getResources().getColor(R.color.white));
     init_info.bringToFront();
     init_info.setVisibility(View.VISIBLE);
+     remoteControls.setVisibility(View.INVISIBLE);
     // Recalculate view Ids
     for (int i = 0; i < mSubscribers.size(); i++) {
       mSubscribers.get(i).getView().setId(getResIdForSubscriberIndex(i));
@@ -604,10 +622,25 @@ private RelativeLayout actionBar;
   public void onVideoDataReceived(SubscriberKit subscriberKit) {
 
   }
+ public void showNetworkWarning(){
+    mAlert.setBackgroundResource(R.color.quality_warning);
+    mAlert.setTextColor(this.getResources().getColor(R.color.white));
+    mAlert.bringToFront();
+    mAlert.setVisibility(View.VISIBLE);
+    mAlert.postDelayed(new Runnable() {
+      public void run() {
+        mAlert.setVisibility(View.GONE);
+      }
+    }, 7000);
+  }
 
   @Override
   public void onVideoDisabled(SubscriberKit subscriberKit, String s) {
-    onDisableRemoteVideo(false);
+    if (reason.equals("quality")) {
+      showNetworkWarning();
+    }else if(reason.equals("publishVideo")) {
+      onDisableRemoteVideo(false);
+    }
   }
 
   @Override
