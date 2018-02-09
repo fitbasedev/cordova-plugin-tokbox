@@ -16,6 +16,26 @@
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
     android:background="@color/subscriber_background">
+         <RelativeLayout
+        android:id="@+id/remoteControls"
+        android:layout_width="@dimen/action_bar_width"
+        android:layout_height="match_parent"
+        android:layout_alignParentRight="true"
+        android:layout_marginRight="5dp"
+        android:layout_marginTop="25dp"
+        android:visibility="gone">
+
+
+        <ImageButton
+          android:id="@+id/remoteAudio"
+          android:layout_width="@dimen/icon_width"
+          android:layout_height="@dimen/icon_height"
+          android:layout_marginRight="14.1dp"
+          android:background="@drawable/bckg_icon"
+          android:src="@drawable/audio"
+          android:onClick="onRemoteAudioChanged"/>
+
+      </RelativeLayout>
     <TextView
       android:id="@+id/quality_warning"
       android:layout_width="match_parent"

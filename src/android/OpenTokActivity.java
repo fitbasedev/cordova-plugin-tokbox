@@ -635,7 +635,7 @@ private RelativeLayout actionBar;
   }
 
   @Override
-  public void onVideoDisabled(SubscriberKit subscriberKit, String s) {
+  public void onVideoDisabled(SubscriberKit subscriberKit, String reason) {
     if (reason.equals("quality")) {
       showNetworkWarning();
     }else if(reason.equals("publishVideo")) {
