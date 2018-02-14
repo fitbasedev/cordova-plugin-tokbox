@@ -149,24 +149,23 @@
               android:src="@drawable/video_icon" />
 
             <ImageButton
-              android:id="@+id/btn_exit"
-              android:layout_width="@dimen/icon_width"
-              android:layout_height="@dimen/icon_height"
-              android:layout_centerHorizontal="true"
-              android:layout_centerVertical="true"
-              android:background="@drawable/end_call_button"
-              android:clickable="true"
-              android:src="@drawable/hang_up" />
-
-            <ImageButton
-              android:id="@+id/btn_pauseaudio"
-              android:layout_width="@dimen/icon_width"
-              android:layout_height="@dimen/icon_height"
-              android:layout_centerVertical="true"
-              android:layout_marginLeft="14.1dp"
-              android:layout_toRightOf="@+id/btn_exit"
-              android:background="@drawable/bckg_icon"
-              android:src="@drawable/mic_icon" />
+                    android:id="@+id/btn_pauseaudio"
+                    android:layout_width="@dimen/icon_width"
+                    android:layout_height="@dimen/icon_height"
+                    android:layout_centerVertical="true"
+                    android:background="@drawable/bckg_icon"
+                    android:src="@drawable/mic_icon" />
+                <ImageButton
+                    android:id="@+id/btn_exit"
+                    android:layout_width="@dimen/icon_width"
+                    android:layout_height="@dimen/icon_height"
+                    android:layout_marginLeft="14.1dp"
+                    android:layout_centerHorizontal="true"
+                    android:layout_centerVertical="true"
+                    android:layout_toRightOf="@+id/btn_pauseaudio"
+                    android:background="@drawable/end_call_button"
+                    android:clickable="true"
+                    android:src="@drawable/hang_up" />
 
 
         </LinearLayout>
