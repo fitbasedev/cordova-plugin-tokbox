@@ -37,6 +37,7 @@ import com.opentok.android.Session.StreamPropertiesListener;
 import com.opentok.android.Stream;
 import com.opentok.android.Subscriber;
 import com.opentok.android.SubscriberKit;
+import android.view.ViewGroup;
 
 import org.json.JSONObject;
 
@@ -231,9 +232,8 @@ private RelativeLayout actionBar;
   }
   public void onDisableRemoteVideo(boolean video){
     if (!video) {
-       RelativeLayout.LayoutParams layoutParams = new RelativeLayout.LayoutParams(
-        this.getResources().getDisplayMetrics().widthPixels, this.getResources()
-        .getDisplayMetrics().heightPixels);
+      RelativeLayout.LayoutParams layoutParams = new RelativeLayout.LayoutParams(
+                    ViewGroup.LayoutParams.MATCH_PARENT,ViewGroup.LayoutParams.MATCH_PARENT);
       avatar = new ImageView(this);
       avatar.setImageResource(R.mipmap.avatar);
       avatar.setBackgroundResource(R.drawable.bckg_audio_only);
