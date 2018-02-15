@@ -14,7 +14,7 @@
 		<engine name="cordova" version=">=4.0.0"/>
 	</engines>
 
-	<js-module src="src/js/tokbox.js" name="TokBox">
+	<js-module src="www/tokbox.js" name="TokBox">
 		<clobbers target="window.plugin.tokbox" />
 	</js-module>
     
