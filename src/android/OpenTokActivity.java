@@ -1,46 +1,46 @@
 package com.fitbase.TokBox;
 
+
 import android.Manifest;
-import android.app.Dialog; 
+import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
-import android.content.res.TypedArray;
-import android.view.WindowManager;
 import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
+import android.text.Layout;
+import android.util.DisplayMetrics;
 import android.util.Log;
-import android.view.MotionEvent;
 import android.view.View;
-import android.view.ViewGroup;
-import android.widget.FrameLayout;
+import android.view.WindowManager;
+import android.widget.Button;
+import android.widget.CompoundButton;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
+import android.widget.ToggleButton;
+import android.view.ViewGroup;
 
-import com.fitbase.MainActivity;
-import com.fitbase.R;
 import com.opentok.android.BaseVideoRenderer;
 import com.opentok.android.Connection;
 import com.opentok.android.OpentokError;
 import com.opentok.android.Publisher;
 import com.opentok.android.PublisherKit;
 import com.opentok.android.Session;
-import com.opentok.android.Session.StreamPropertiesListener;
 import com.opentok.android.Stream;
 import com.opentok.android.Subscriber;
 import com.opentok.android.SubscriberKit;
-import android.view.ViewGroup;
+import android.content.res.Configuration;
 
 import org.json.JSONObject;
 
+import java.lang.annotation.Annotation;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -58,40 +58,44 @@ import pub.devrel.easypermissions.AppSettingsDialog;
 import pub.devrel.easypermissions.EasyPermissions;
 
 
+
+import com.fitbase.MainActivity;
+import com.fitbase.R;
+
+
+
+
+
 public class OpenTokActivity extends AppCompatActivity
-        implements EasyPermissions.PermissionCallbacks,
-        Publisher.PublisherListener,
-        Session.SessionListener, Session.ReconnectionListener ,Subscriber.VideoListener,Session.SignalListener,Session.ConnectionListener{
+  implements EasyPermissions.PermissionCallbacks,
+  Publisher.PublisherListener,
+  Session.SessionListener,Session.ReconnectionListener ,Subscriber.VideoListener,Session.SignalListener,Session.ConnectionListener {
 
   private static final String TAG = MainActivity.class.getSimpleName();
+  public static final String SIGNAL_TYPE = "closeConnection";
+
+
   private static final int RC_SETTINGS_SCREEN_PERM = 123;
   private static final int RC_VIDEO_APP_PERM = 124;
 
   private Session mSession;
   private Publisher mPublisher;
-long time;
+  String key;
   private ArrayList<Subscriber> mSubscribers = new ArrayList<Subscriber>();
   private HashMap<Stream, Subscriber> mSubscriberStreams = new HashMap<Stream, Subscriber>();
-
-  Set<String> connectionMetaData = new HashSet<String>(); 
-  //  private ConstraintLayout mContainer;
-  private RelativeLayout mPublisherViewContainer,remoteControls;
-  private RelativeLayout mSubscriberViewContainer;
+  private RelativeLayout mPublisherViewContainer;
+  long time;
+  RelativeLayout mSubscriberViewContainer,subscriberAudio;
   private ImageView mLocalAudioOnlyImage,avatar;
-  private ProgressDialog mProgressDialog,mSessionReconnectDialog;
-  String key;
-
+  Set<String> connectionMetaData = new HashSet<String>();
   private String tokBoxData, apiKey, token, sessionId, publisherId, duration, startdate,logedInUserId;
-private RelativeLayout actionBar;
-  ImageButton btnPausevideo, btnPauseaudio, btn_exit;
   private Handler hidehandler;
+  private static final String FORMAT_2 = "%02d";
+  ImageButton btnPausevideo, btnPauseaudio, btn_exit;
   LinearLayout llcontrols;
   private TextView tvtimer,init_info,  mAlert;
-  float dX, dY;
-  private static final String FORMAT_2 = "%02d";
-  private int totalConnections=0;
-  public static final String SIGNAL_TYPE = "closeConnection";
-  private boolean FLAG_KEEP_SCREEN_ON=false;
+  private ImageButton remoteAudio;
+  private ProgressDialog mProgressDialog,mSessionReconnectDialog;
   public boolean isWantToContinueHere;
   @Override
   protected void onCreate(Bundle savedInstanceState) {
@@ -100,6 +104,23 @@ private RelativeLayout actionBar;
     super.onCreate(savedInstanceState);
     setContentView(R.layout.activity_main);
     getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+    mPublisherViewContainer = (RelativeLayout) findViewById(R.id.publisher_container);
+    mPublisherViewContainer.setVisibility(View.INVISIBLE);
+    mSubscriberViewContainer = (RelativeLayout) findViewById(R.id.subscriberview0);
+
+    btnPausevideo = (ImageButton) findViewById(R.id.btn_pausevideo);
+    btnPauseaudio = (ImageButton) findViewById(R.id.btn_pauseaudio);
+    btn_exit = (ImageButton) findViewById(R.id.btn_exit);
+    llcontrols = (LinearLayout) findViewById(R.id.llcontrols);
+    tvtimer = (TextView) findViewById(R.id.tvtimer);
+    init_info=(TextView)findViewById(R.id.init_info);
+    mPublisherViewContainer.setOnTouchListener(new OnDragTouchListener(mPublisherViewContainer));
+    mAlert = (TextView) findViewById(R.id.quality_warning);
+    mSessionReconnectDialog = new ProgressDialog(OpenTokActivity.this);
+    //-------------------audio 0-------------------------------
+    subscriberAudio=(RelativeLayout)findViewById(R.id.remoteControls);
+    remoteAudio=(ImageButton)findViewById(R.id.remoteAudio0);
+    //--------------------------------------------------------
     hidehandler = new Handler();
     tokBoxData = getIntent().getStringExtra("tokbox_obj");
     try {
@@ -114,23 +135,6 @@ private RelativeLayout actionBar;
     } catch (Exception e) {
       e.printStackTrace();
     }
-
-
- 
-    // initialize view objects from your layout
-    mPublisherViewContainer = (RelativeLayout) findViewById(R.id.publisher_container);
-    mSubscriberViewContainer = (RelativeLayout) findViewById(R.id.subscriber_container);
-    btnPausevideo = (ImageButton) findViewById(R.id.btn_pausevideo);
-    btnPauseaudio = (ImageButton) findViewById(R.id.btn_pauseaudio);
-    remoteControls=(RelativeLayout) findViewById(R.id.remoteControls) ;
-    btn_exit = (ImageButton) findViewById(R.id.btn_exit);
-    llcontrols = (LinearLayout) findViewById(R.id.llcontrols);
-    tvtimer = (TextView) findViewById(R.id.tvtimer);
-    init_info=(TextView)findViewById(R.id.init_info);
-    mAlert = (TextView) findViewById(R.id.quality_warning);
-    mSessionReconnectDialog = new ProgressDialog(OpenTokActivity.this);
-   //for publisher container making draggable 
-    mPublisherViewContainer.setOnTouchListener(new OnDragTouchListener(mPublisherViewContainer));
     btnPausevideo.setOnClickListener(new View.OnClickListener() {
       @Override
       public void onClick(View view) {
@@ -209,77 +213,60 @@ private RelativeLayout actionBar;
     } catch (Exception e) {
       e.printStackTrace();
     }
-    /*
-    *params @totalTime in millis, @Time ticks
-     */
-
-
-
     requestPermissions();
-
   }
   public void onDisableLocalVideo(boolean video) {
     if (!video) {
-          mLocalAudioOnlyImage = new ImageView(this);
-          mLocalAudioOnlyImage.setImageResource(R.mipmap.avatar);
-          mLocalAudioOnlyImage.setBackgroundResource(R.drawable.bckg_audio_only);
-           mPublisherViewContainer.addView(mLocalAudioOnlyImage);
-        } else {
-          mPublisherViewContainer.removeView(mLocalAudioOnlyImage);
-        }
+
+      mLocalAudioOnlyImage = new ImageView(this);
+      mLocalAudioOnlyImage.setImageResource(R.mipmap.avatar);
+      mLocalAudioOnlyImage.setBackgroundResource(R.drawable.bckg_audio_only);
+      mPublisherViewContainer.addView(mLocalAudioOnlyImage);
+    } else {
+      mPublisherViewContainer.removeView(mLocalAudioOnlyImage);
+    }
 
 
   }
   public void onDisableRemoteVideo(boolean video){
     if (!video) {
       RelativeLayout.LayoutParams layoutParams = new RelativeLayout.LayoutParams(
-                    ViewGroup.LayoutParams.MATCH_PARENT,ViewGroup.LayoutParams.MATCH_PARENT);
+        ViewGroup.LayoutParams.MATCH_PARENT,ViewGroup.LayoutParams.MATCH_PARENT);
       avatar = new ImageView(this);
       avatar.setImageResource(R.mipmap.avatar);
       avatar.setBackgroundResource(R.drawable.bckg_audio_only);
       mSubscriberViewContainer.addView(avatar,layoutParams);
-      remoteControls.bringToFront();
+      subscriberAudio.bringToFront();
     } else {
       mSubscriberViewContainer.removeView(avatar);
     }
   }
-   public void onRemoteAudioChanged(View v) {
-    if(mSubscribers.size()==0){
-      return;
-    }
-    boolean enableAudioOnly = mSubscribers.get(0).getSubscribeToAudio();
-    if (enableAudioOnly) {
-      mSubscribers.get(0).setSubscribeToAudio(false);
-      ((ImageButton)v).setImageResource(R.drawable.no_audio);
-    }
-    else {
-      mSubscribers.get(0).setSubscribeToAudio(true);
-      ((ImageButton)v).setImageResource(R.drawable.audio);
-    }
+  @Override
+  protected void onStart() {
+    Log.d(TAG, "onStart");
+
+    super.onStart();
   }
   public void swapCamera(View view) {
 
-      mPublisher.cycleCamera();
+    mPublisher.cycleCamera();
 
   }
   private Runnable hideControllerThread = new Runnable() {
 
     public void run() {
- 
-  llcontrols.setVisibility(View.GONE);
- 
+      llcontrols.setVisibility(View.GONE);
     }
   };
 
 
   public void hideControllers() {
+
     hidehandler.postDelayed(hideControllerThread, 10000);
   }
 
   public void showControllers() {
- 
     llcontrols.setVisibility(View.VISIBLE);
- 
     hidehandler.removeCallbacks(hideControllerThread);
     hideControllers();
   }
@@ -294,6 +281,14 @@ private RelativeLayout actionBar;
     } else {
       showControllers();
     }
+  }
+
+
+  @Override
+  protected void onRestart() {
+    Log.d(TAG, "onRestart");
+
+    super.onRestart();
   }
 
   @Override
@@ -326,6 +321,13 @@ private RelativeLayout actionBar;
   }
 
   @Override
+  protected void onStop() {
+    Log.d(TAG, "onPause");
+
+    super.onStop();
+  }
+
+  @Override
   protected void onDestroy() {
     Log.d(TAG, "onDestroy");
 
@@ -352,77 +354,56 @@ private RelativeLayout actionBar;
 
     if (EasyPermissions.somePermissionPermanentlyDenied(this, perms)) {
       new AppSettingsDialog.Builder(this)
-              .setTitle(getString(R.string.title_settings_dialog))
-              .setRationale(getString(R.string.rationale_ask_again))
-              .setPositiveButton(getString(R.string.setting))
-              .setNegativeButton(getString(R.string.cancel))
-              .setRequestCode(RC_SETTINGS_SCREEN_PERM)
-              .build()
-              .show();
+        .setTitle(getString(R.string.title_settings_dialog))
+        .setRationale(getString(R.string.rationale_ask_again))
+        .setPositiveButton(getString(R.string.setting))
+        .setNegativeButton(getString(R.string.cancel))
+        .setRequestCode(RC_SETTINGS_SCREEN_PERM)
+        .build()
+        .show();
     }
-  }
-
-  private void startPublisherPreview() {
-    mPublisher = new Publisher.Builder(this).name("publisher").build();
-    mPublisher.setPublisherListener(this);
-    mPublisher.setStyle(BaseVideoRenderer.STYLE_VIDEO_SCALE, BaseVideoRenderer.STYLE_VIDEO_FILL);
-    mPublisher.startPreview();
   }
 
   @AfterPermissionGranted(RC_VIDEO_APP_PERM)
   private void requestPermissions() {
     String[] perms = {
-            Manifest.permission.INTERNET,
-            Manifest.permission.CAMERA,
-            Manifest.permission.RECORD_AUDIO
+      Manifest.permission.INTERNET,
+      Manifest.permission.CAMERA,
+      Manifest.permission.RECORD_AUDIO
     };
     if (EasyPermissions.hasPermissions(this, perms)) {
-      mSession = new Session.Builder(this, apiKey, sessionId).sessionOptions(new Session.SessionOptions() {
-        @Override
-        public boolean useTextureViews() {
-          return true;
-        }
-      }).build();
+      mSession = new Session.Builder(OpenTokActivity.this, apiKey, sessionId).build();
       mSession.setSessionListener(this);
-      mSession.setReconnectionListener(this);
-      if(mSession!=null){
-        mSession.setSessionListener(this);
-        mSession.setSignalListener(this);
-        mSession.setConnectionListener(this);
-        mSession.connect(token);
-        startPublisherPreview();
-        mPublisher.getView().setId(R.id.publisher_view_id);
-        mPublisherViewContainer.addView(mPublisher.getView());
-        //show connecting dialog
-        mProgressDialog = new ProgressDialog(this);
-        mProgressDialog.setCanceledOnTouchOutside(false);
-        mProgressDialog.setTitle("Please wait");
-        mProgressDialog.setMessage("Connecting...");
-        mProgressDialog.show();
-        //show the messgae when trainer not joined the session
-        init_info.setBackgroundResource(R.color.quality_warning);
-        init_info.setTextColor(OpenTokActivity.this.getResources().getColor(R.color.white));
-        init_info.bringToFront();
-        init_info.setVisibility(View.VISIBLE);
-      } else {
-        Log.e(TAG, "OpenTok credentials are invalid");
-        Toast.makeText(OpenTokActivity.this, "Credentials are invalid", Toast.LENGTH_LONG).show();
-        this.finish();
-      }
-
- 
+      mProgressDialog = new ProgressDialog(this);
+      mProgressDialog.setCanceledOnTouchOutside(false);
+      mProgressDialog.setTitle("Please wait");
+      mProgressDialog.setMessage("Connecting...");
+      mProgressDialog.show();
+      mSession.connect(token);
     } else {
-      EasyPermissions.requestPermissions(this, getString(R.string.rationale_video_app), RC_VIDEO_APP_PERM, perms);
+      EasyPermissions.requestPermissions(OpenTokActivity.this, getString(R.string.rationale_video_app), RC_VIDEO_APP_PERM, perms);
     }
   }
-
   @Override
   public void onConnected(Session session) {
     Log.d(TAG, "onConnected: Connected to session " + session.getSessionId());
-    key=session.getConnection().getData();
-    connectionMetaData.add(key); 
-    mSession.publish(mPublisher);
     mProgressDialog.dismiss();
+    mPublisher = new Publisher.Builder(OpenTokActivity.this).name("publisher").build();
+    //mPublisher.setRenderer(new BasicCustomVideoRenderer(this));
+      mSession.setReconnectionListener(this);
+      mSession.setSessionListener(this);
+      mSession.setSignalListener(this);
+      mSession.setConnectionListener(this);
+    mPublisher.setStyle(BaseVideoRenderer.STYLE_VIDEO_SCALE, BaseVideoRenderer.STYLE_VIDEO_FILL);
+    mPublisherViewContainer.addView(mPublisher.getView());
+    mPublisherViewContainer.setVisibility(View.VISIBLE);
+    init_info.setBackgroundResource(R.color.quality_warning);
+    init_info.setTextColor(this.getResources().getColor(R.color.white));
+    init_info.bringToFront();
+    init_info.setVisibility(View.VISIBLE);
+    key=session.getConnection().getData();
+    connectionMetaData.add(key);
+    mSession.publish(mPublisher);
   }
 
   @Override
@@ -436,50 +417,77 @@ private RelativeLayout actionBar;
   public void onError(Session session, OpentokError opentokError) {
     Log.d(TAG, "onError: Error (" + opentokError.getMessage() + ") in session " + session.getSessionId());
     mProgressDialog.dismiss();
-
     Toast.makeText(this, "Session error. See the logcat please.", Toast.LENGTH_LONG).show();
     finish();
-  }
-
-  private int getResIdForSubscriberIndex(int index) {
-    TypedArray arr = getResources().obtainTypedArray(R.array.subscriber_view_ids);
-    int subId = arr.getResourceId(index, 0);
-    arr.recycle();
-    return subId;
   }
 
   @Override
   public void onStreamReceived(Session session, Stream stream) {
     Log.d(TAG, "onStreamReceived: New stream " + stream.getStreamId() + " in session " + session.getSessionId());
-
     String publisherId = stream.getConnection().getData();
-
-    if (this.publisherId.equalsIgnoreCase(publisherId)) {
-     //show loader when subscriber is joining a session
-
+   if (this.publisherId.equalsIgnoreCase(publisherId)) {
+      init_info.setVisibility(View.INVISIBLE);
       final Subscriber subscriber = new Subscriber.Builder(OpenTokActivity.this, stream).build();
-      init_info.setVisibility(View.GONE);
-      subscriber.setVideoListener(OpenTokActivity.this);
+      subscriber.setStyle(BaseVideoRenderer.STYLE_VIDEO_SCALE, BaseVideoRenderer.STYLE_VIDEO_FILL);
+      subscriber.setVideoListener(this);
       mSession.subscribe(subscriber);
       mSubscribers.add(subscriber);
       mSubscriberStreams.put(stream, subscriber);
+      calculateLayout();
+   }
 
-      int subId = getResIdForSubscriberIndex(mSubscribers.size() - 1);
-      subscriber.getView().setId(subId);
- 
-
-
-      mSubscriberViewContainer.addView(subscriber.getView());
-      remoteControls.setVisibility(View.VISIBLE);
-      remoteControls.bringToFront();
-
-    //stop loading spinning
+  }
 
 
+  @Override
+  public void onConfigurationChanged(Configuration newConfig) {
+    super.onConfigurationChanged(newConfig);
+    DisplayMetrics maMetrics  =getDisplay();
+    if (mSubscribers.size() == 1) {
+      mSubscriberViewContainer.getLayoutParams().height = maMetrics.heightPixels;
+      mSubscriberViewContainer.getLayoutParams().width = maMetrics.widthPixels;
+      mSubscriberViewContainer.requestLayout();
+    }
 
- 
+  }
+
+  private void calculateLayout( ) {
+    DisplayMetrics maMetrics  =getDisplay();
+    if(mSubscribers.size()==1){
+      boolean isMuted=mSubscribers.get(0).getSubscribeToAudio();
+      mPublisherViewContainer.setVisibility(View.VISIBLE);
+      mSubscriberViewContainer.addView(mSubscribers.get(0).getView());
+      subscriberAudio.setVisibility(View.VISIBLE);
+      subscriberAudio.bringToFront();;
+      remoteAudio.setOnClickListener(clickListener);
+      remoteAudio.setTag(mSubscribers.get(0).getStream());
+      remoteAudio.setImageResource(isMuted ? R.drawable.audio : R.drawable.no_audio);
+      mSubscriberViewContainer.getLayoutParams().height=maMetrics.heightPixels;
+      mSubscriberViewContainer.getLayoutParams().width=maMetrics.widthPixels;
+      mSubscriberViewContainer.requestLayout();
+
     }
   }
+
+  public DisplayMetrics getDisplay(){
+    DisplayMetrics metrics = new DisplayMetrics();
+    getWindowManager().getDefaultDisplay().getMetrics(metrics);
+    return metrics;
+  }
+  private View.OnClickListener clickListener = new View.OnClickListener() {
+    @Override
+    public void onClick(View view) {
+      Subscriber participant = mSubscriberStreams.get(view.getTag());
+      boolean enableAudioOnly = participant.getSubscribeToAudio();
+      if (enableAudioOnly) {
+        participant.setSubscribeToAudio(false);
+        ((ImageButton)view).setImageResource(R.drawable.no_audio);
+      } else {
+        participant.setSubscribeToAudio(true);
+        ((ImageButton)view).setImageResource(R.drawable.audio);
+      }
+    }
+  };
 
   @Override
   public void onStreamDropped(Session session, Stream stream) {
@@ -492,26 +500,21 @@ private RelativeLayout actionBar;
     connectionMetaData.remove(stream.getConnection().getData());
     mSubscribers.remove(subscriber);
     mSubscriberStreams.remove(stream);
- 
+
     mSubscriberViewContainer.removeView(subscriber.getView());
     mSubscriberViewContainer.removeView(avatar);
     init_info.setBackgroundResource(R.color.quality_warning);
     init_info.setTextColor(OpenTokActivity.this.getResources().getColor(R.color.white));
     init_info.bringToFront();
     init_info.setVisibility(View.VISIBLE);
-     remoteControls.setVisibility(View.INVISIBLE);
-    // Recalculate view Ids
-    for (int i = 0; i < mSubscribers.size(); i++) {
-      mSubscribers.get(i).getView().setId(getResIdForSubscriberIndex(i));
-    }
- 
+    subscriberAudio.setVisibility(View.INVISIBLE);
   }
+
+
 
   @Override
   public void onStreamCreated(PublisherKit publisherKit, Stream stream) {
     Log.d(TAG, "onStreamCreated: Own stream " + stream.getStreamId() + " created");
-
-
   }
 
   @Override
@@ -522,12 +525,10 @@ private RelativeLayout actionBar;
   @Override
   public void onError(PublisherKit publisherKit, OpentokError opentokError) {
     Log.d(TAG, "onError: Error (" + opentokError.getMessage() + ") in publisher");
-    mProgressDialog.dismiss();
+
     Toast.makeText(this, "Session error. See the logcat please.", Toast.LENGTH_LONG).show();
     finish();
   }
-
- 
 
   private void disconnectSession() {
     if (mSession == null) {
@@ -539,20 +540,19 @@ private RelativeLayout actionBar;
         if (subscriber != null) {
           mSession.unsubscribe(subscriber);
           subscriber.destroy();
+          mSubscribers.remove(subscriber);
         }
       }
     }
 
     if (mPublisher != null) {
-      mSession.unpublish(mPublisher);
-//      mContainer.removeView(mPublisher.getView());
       mPublisherViewContainer.removeView(mPublisher.getView());
+      mSession.unpublish(mPublisher);
       mPublisher.destroy();
       mPublisher = null;
     }
     mSession.disconnect();
   }
-
 
   @Override
   public void onReconnecting(Session session) {
@@ -564,6 +564,38 @@ private RelativeLayout actionBar;
     showReconnectionDialog(false);
   }
 
+  @Override
+  public void onVideoDataReceived(SubscriberKit subscriberKit) {
+
+  }
+
+  @Override
+  public void onVideoDisabled(SubscriberKit subscriberKit, String reason) {
+    if (reason.equals("quality")) {
+      showNetworkWarning();
+    }else if(reason.equals("publishVideo")) {
+      onDisableRemoteVideo(false);
+    }
+  }
+
+  @Override
+  public void onVideoEnabled(SubscriberKit subscriberKit, String s) {
+    onDisableRemoteVideo(true);
+  }
+
+
+
+
+
+  @Override
+  public void onVideoDisableWarning(SubscriberKit subscriberKit) {
+
+  }
+
+  @Override
+  public void onVideoDisableWarningLifted(SubscriberKit subscriberKit) {
+
+  }
   private void showReconnectionDialog(boolean show) {
     if (show) {
       mSessionReconnectDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
@@ -574,16 +606,35 @@ private RelativeLayout actionBar;
     }
     else {
       mSessionReconnectDialog.dismiss();
-      AlertDialog.Builder builder = new AlertDialog.Builder(OpenTokActivity.this); 
+      AlertDialog.Builder builder = new AlertDialog.Builder(this);
       builder.setMessage("Session has been reconnected")
         .setPositiveButton(android.R.string.ok, null);
       builder.create();
       builder.show();
     }
   }
-    @Override
+  public void showNetworkWarning(){
+    mAlert.setBackgroundResource(R.color.quality_warning);
+    mAlert.setTextColor(this.getResources().getColor(R.color.white));
+    mAlert.bringToFront();
+    mAlert.setVisibility(View.VISIBLE);
+    mAlert.postDelayed(new Runnable() {
+      public void run() {
+        mAlert.setVisibility(View.GONE);
+      }
+    }, 7000);
+  }
+
+  @Override
+  public void onSignalReceived(Session session, String type, String data, Connection connection) {
+    String myConnectionId = session.getConnection().getConnectionId();
+    if (!connection.getConnectionId().equals(myConnectionId) && type != null && type.equals(SIGNAL_TYPE) && data.equals(logedInUserId)) {
+      onBackPressed();
+    }
+  }
+
+  @Override
   public void onConnectionCreated(Session session, Connection connection) {
-    totalConnections++;
     key=connection.getData();
     if(connectionMetaData.contains(key)){
       if(mSession.getConnection().getConnectionId()==session.getConnection().getConnectionId()){
@@ -591,9 +642,9 @@ private RelativeLayout actionBar;
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setCancelable(false);
         Dialog dialog = builder.create();
-        dialog.setCanceledOnTouchOutside(false);  
+        dialog.setCanceledOnTouchOutside(false);
         builder.setMessage("Looks like your stream is already running ! Do you want it to start here..?").setPositiveButton("Yes", dialogClickListener)
-                .setNegativeButton("No", dialogClickListener).show();
+          .setNegativeButton("No", dialogClickListener).show();
       }
     }else{
       connectionMetaData.add(key);
@@ -617,56 +668,6 @@ private RelativeLayout actionBar;
 
   @Override
   public void onConnectionDestroyed(Session session, Connection connection) {
-  connectionMetaData.remove(connection.getData());
+    connectionMetaData.remove(connection.getData());
   }
-
-  @Override
-  public void onVideoDataReceived(SubscriberKit subscriberKit) {
-
-  }
- public void showNetworkWarning(){
-    mAlert.setBackgroundResource(R.color.quality_warning);
-    mAlert.setTextColor(this.getResources().getColor(R.color.white));
-    mAlert.bringToFront();
-    mAlert.setVisibility(View.VISIBLE);
-    mAlert.postDelayed(new Runnable() {
-      public void run() {
-        mAlert.setVisibility(View.GONE);
-      }
-    }, 7000);
-  }
-
-  @Override
-  public void onVideoDisabled(SubscriberKit subscriberKit, String reason) {
-    if (reason.equals("quality")) {
-      showNetworkWarning();
-    }else if(reason.equals("publishVideo")) {
-      onDisableRemoteVideo(false);
-    }
-  }
-
-  @Override
-  public void onVideoEnabled(SubscriberKit subscriberKit, String s) {
-    onDisableRemoteVideo(true);
-  }
-
-  @Override
-  public void onVideoDisableWarning(SubscriberKit subscriberKit) {
-
-  }
-
-  @Override
-  public void onVideoDisableWarningLifted(SubscriberKit subscriberKit) {
-
-  }
-
-  @Override
-  public void onSignalReceived(Session session, String type, String data, Connection connection) {
-
-    String myConnectionId = session.getConnection().getConnectionId();
-    if (!connection.getConnectionId().equals(myConnectionId) && type != null && type.equals(SIGNAL_TYPE) && data.equals(logedInUserId)) {
-    onBackPressed();
-    }
-  }
-    
-     }
+}
