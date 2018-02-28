@@ -637,7 +637,7 @@ public class OpenTokActivity extends AppCompatActivity
   public void onConnectionCreated(Session session, Connection connection) {
     key=connection.getData();
     if(connectionMetaData.contains(key)){
-      if(mSession.getConnection().getConnectionId()==session.getConnection().getConnectionId()){
+      if(mSession.getConnection().getConnectionId()==session.getConnection().getConnectionId() && key.equals(logedInUserId)){
         isWantToContinueHere=false;
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setCancelable(false);
