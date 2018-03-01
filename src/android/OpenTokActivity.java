@@ -147,7 +147,7 @@ public class OpenTokActivity extends AppCompatActivity
     });
     //-------------------audio 0-------------------------------
     subscriberAudio=(RelativeLayout)findViewById(R.id.remoteControls);
-    remoteAudio=(ImageButton)findViewById(R.id.remoteAudio0);
+    remoteAudio=(ImageButton)findViewById(R.id.remoteAudio);
     //--------------------------------------------------------
     hidehandler = new Handler();
     tokBoxData = getIntent().getStringExtra("tokbox_obj");
