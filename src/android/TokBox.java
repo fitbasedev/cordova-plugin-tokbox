@@ -20,8 +20,6 @@ public class TokBox extends CordovaPlugin {
 		cordova.getActivity().runOnUiThread(new Runnable() {			
 			@Override
 			public void run() {				
-				Toast myMessage = Toast.makeText(cordova.getActivity().getWindow().getContext(), "Please wait..", Toast.LENGTH_SHORT);
-				myMessage.show();
 				Intent in = new Intent(cordova.getActivity().getWindow().getContext(), OpenTokActivity.class);
 				in.putExtra("tokbox_obj",params);
 				cordova.getActivity().getWindow().getContext().startActivity(in);
