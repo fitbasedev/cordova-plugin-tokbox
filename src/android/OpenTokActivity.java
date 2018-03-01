@@ -132,8 +132,9 @@ public class OpenTokActivity extends AppCompatActivity
       tvtimer.setTextSize(maMetrics.heightPixels/160);
 
     }
-    mSubscriberViewContainer.setSoundEffectsEnabled(false);
-    mSubscriberViewContainer.setOnClickListener(new View.OnClickListener() {
+    RelativeLayout mainLayout=(RelativeLayout)findViewById(R.id.activity_main);
+    mainLayout.setSoundEffectsEnabled(false);
+    mainLayout.setOnClickListener(new View.OnClickListener() {
       @Override
       public void onClick(View v) {
         if(llcontrols.getVisibility()==View.VISIBLE){
