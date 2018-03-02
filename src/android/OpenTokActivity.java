@@ -92,7 +92,7 @@ public class OpenTokActivity extends AppCompatActivity
   private Handler hidehandler;
   private static final String FORMAT_2 = "%02d";
   ImageButton btnPausevideo, btnPauseaudio, btn_exit;
-  LinearLayout llcontrols;
+  RelativeLayout llcontrols;
   private TextView tvtimer,init_info,  mAlert;
   private ImageButton remoteAudio;
   private ProgressDialog mProgressDialog,mSessionReconnectDialog;
@@ -111,7 +111,7 @@ public class OpenTokActivity extends AppCompatActivity
     btnPausevideo = (ImageButton) findViewById(R.id.btn_pausevideo);
     btnPauseaudio = (ImageButton) findViewById(R.id.btn_pauseaudio);
     btn_exit = (ImageButton) findViewById(R.id.btn_exit);
-    llcontrols = (LinearLayout) findViewById(R.id.llcontrols);
+    llcontrols = (RelativeLayout) findViewById(R.id.llcontrols);
     tvtimer = (TextView) findViewById(R.id.tvtimer);
     init_info=(TextView)findViewById(R.id.init_info);
     mPublisherViewContainer.setOnTouchListener(new OnDragTouchListener(mPublisherViewContainer));
