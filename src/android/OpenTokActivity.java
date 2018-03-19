@@ -563,13 +563,12 @@ public class OpenTokActivity extends AppCompatActivity
       return;
     }
 
-    if (mSubscribers.size() > 0) {
-      for (Subscriber subscriber : mSubscribers) {
-        if (subscriber != null) {
-          mSession.unsubscribe(subscriber);
-          subscriber.destroy();
-          mSubscribers.remove(subscriber);
-        }
+     if (mSubscribers.size() > 0) {
+      Iterator<Subscriber> iter = mSubscribers.iterator();
+      while (iter.hasNext()) {
+        Subscriber subscriber = iter.next();
+        if (subscriber!=null)
+          iter.remove();
       }
     }
 
