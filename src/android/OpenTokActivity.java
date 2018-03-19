@@ -97,6 +97,7 @@ public class OpenTokActivity extends AppCompatActivity
   private ImageButton remoteAudio;
   private ProgressDialog mProgressDialog,mSessionReconnectDialog;
   public boolean isWantToContinueHere;
+  JSONObject jobj;
   @Override
   protected void onCreate(Bundle savedInstanceState) {
     Log.d(TAG, "onCreate");
@@ -107,7 +108,6 @@ public class OpenTokActivity extends AppCompatActivity
     mPublisherViewContainer = (RelativeLayout) findViewById(R.id.publisher_container);
     mPublisherViewContainer.setVisibility(View.INVISIBLE);
     mSubscriberViewContainer = (RelativeLayout) findViewById(R.id.subscriberview0);
-
     btnPausevideo = (ImageButton) findViewById(R.id.btn_pausevideo);
     btnPauseaudio = (ImageButton) findViewById(R.id.btn_pauseaudio);
     btn_exit = (ImageButton) findViewById(R.id.btn_exit);
@@ -153,7 +153,7 @@ public class OpenTokActivity extends AppCompatActivity
     hidehandler = new Handler();
     tokBoxData = getIntent().getStringExtra("tokbox_obj");
     try {
-      JSONObject jobj = new JSONObject(tokBoxData);
+       jobj = new JSONObject(tokBoxData);
       apiKey = jobj.getString("apiKey");
       token = jobj.getString("tokenId");
       sessionId = jobj.getString("liveSessionId");
@@ -407,7 +407,11 @@ public class OpenTokActivity extends AppCompatActivity
   public void onConnected(Session session) {
     Log.d(TAG, "onConnected: Connected to session " + session.getSessionId());
     mProgressDialog.dismiss();
-    mPublisher = new Publisher.Builder(OpenTokActivity.this).name("publisher").build();
+    try {
+      mPublisher = new Publisher.Builder(OpenTokActivity.this).name(jobj.getString("userName")).build();
+    } catch (JSONException e) {
+      e.printStackTrace();
+    }
     //mPublisher.setRenderer(new BasicCustomVideoRenderer(this));
       mSession.setReconnectionListener(this);
       mSession.setSessionListener(this);
