@@ -58,6 +58,8 @@
 		<resource-file src="src/android/images/drawable/end_call_button.xml" target="res/drawable/end_call_button.xml"/>
 		<resource-file src="src/android/images/drawable/gradient_audionly.xml" target="res/drawable/gradient_audionly.xml"/>
 		<resource-file src="src/android/images/drawable/textview_bckd.xml" target="res/drawable/textview_bckd.xml"/>
+		<resource-file src="src/android/images/drawable/publisher_bckg.xml" target="res/drawable/publisher_bckg.xml"/>
+		<resource-file src="src/android/images/drawable/videoicon_backg.xml" target="res/drawable/videoicon_backg.xml"/>
 
 		<resource-file src="src/android/images/drawable-hdpi/avatar.png" target="res/drawable-hdpi/avatar.png"/>
 		<resource-file src="src/android/images/drawable-hdpi/camera.png" target="res/drawable-hdpi/camera.png"/>

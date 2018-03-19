@@ -120,13 +120,13 @@ public class OpenTokActivity extends AppCompatActivity
     DisplayMetrics maMetrics  =getDisplay();
 
     if(OpenTokActivity.this.getResources().getConfiguration().orientation==Configuration.ORIENTATION_LANDSCAPE){
-      mPublisherViewContainer.getLayoutParams().height=maMetrics.heightPixels/5;
-      mPublisherViewContainer.getLayoutParams().width=maMetrics.widthPixels/8;
+       mPublisherViewContainer.getLayoutParams().height=maMetrics.widthPixels/9;
+      mPublisherViewContainer.getLayoutParams().width=maMetrics.widthPixels/9;
       mPublisherViewContainer.requestLayout();
       tvtimer.setTextSize(maMetrics.heightPixels/100);
 
     }else{
-      mPublisherViewContainer.getLayoutParams().height=maMetrics.heightPixels/8;
+       mPublisherViewContainer.getLayoutParams().height=maMetrics.widthPixels/5;
       mPublisherViewContainer.getLayoutParams().width=maMetrics.widthPixels/5;
       mPublisherViewContainer.requestLayout();
       tvtimer.setTextSize(maMetrics.heightPixels/160);
@@ -415,6 +415,7 @@ public class OpenTokActivity extends AppCompatActivity
       mSession.setConnectionListener(this);
     mPublisher.setStyle(BaseVideoRenderer.STYLE_VIDEO_SCALE, BaseVideoRenderer.STYLE_VIDEO_FILL);
     mPublisherViewContainer.addView(mPublisher.getView());
+    mPublisherViewContainer.setBackgroundResource(R.drawable.publisher_bckg);
     mPublisherViewContainer.setVisibility(View.VISIBLE);
     init_info.setBackgroundResource(R.color.quality_warning);
     init_info.setTextColor(this.getResources().getColor(R.color.white));
@@ -467,12 +468,12 @@ public class OpenTokActivity extends AppCompatActivity
       mSubscriberViewContainer.getLayoutParams().width = maMetrics.widthPixels;
       mSubscriberViewContainer.requestLayout();
     }
-     if (newConfig.orientation == Configuration.ORIENTATION_LANDSCAPE) {
-      mPublisherViewContainer.getLayoutParams().height=maMetrics.heightPixels/5;
-      mPublisherViewContainer.getLayoutParams().width=maMetrics.widthPixels/8;
+    if (newConfig.orientation == Configuration.ORIENTATION_LANDSCAPE) {
+      mPublisherViewContainer.getLayoutParams().height=maMetrics.widthPixels/9;
+      mPublisherViewContainer.getLayoutParams().width=maMetrics.widthPixels/9;
       mPublisherViewContainer.requestLayout();
     } else if (newConfig.orientation == Configuration.ORIENTATION_PORTRAIT){
-      mPublisherViewContainer.getLayoutParams().height=maMetrics.heightPixels/8;
+      mPublisherViewContainer.getLayoutParams().height=maMetrics.widthPixels/5;
       mPublisherViewContainer.getLayoutParams().width=maMetrics.widthPixels/5;
       mPublisherViewContainer.requestLayout();
     }
